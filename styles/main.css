@@ -84,6 +84,14 @@ input:focus, select:focus {
     border-color: #667eea;
 }
 
+.note {
+    display: block;
+    margin-top: 5px;
+    color: #718096;
+    font-size: 0.85em;
+    font-style: italic;
+}
+
 .btn {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;

@@ -22,17 +22,14 @@
                 <div class="input-group">
                     <label for="annual-income">Annual Pre-Gross Income</label>
                     <input type="number" id="annual-income" placeholder="Enter annual income" />
+                    <small class="note">This gets adjusted using 2025 tax rates for all the following calculations</small>
                 </div>
                 <div class="input-group" style="margin-top: 15px;">
                     <label for="additional-tax-rate">Additional Tax Rate (%)</label>
                     <input type="number" id="additional-tax-rate" placeholder="State tax rate, etc." value="0" step="0.1" />
-                    <small style="color: #718096; font-size: 14px; margin-top: 5px; display: block;">
+                    <small class="note">
                         Enter as percentage (e.g., 5.5 for 5.5%). Applied to taxable income for state/local taxes.
                     </small>
-                </div>
-                <div class="input-group" style="margin-top: 15px;">
-                    <label for="monthly-income">Monthly Take-Home Income</label>
-                    <input type="number" id="monthly-income" placeholder="Calculated automatically" readonly />
                 </div>
             </div>
             

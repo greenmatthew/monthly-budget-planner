@@ -1,4 +1,4 @@
-let budgetPieChart, savingsChart;
+let monthlyTakeHome, budgetPieChart, savingsChart;
 let nextCategoryId = 1;
 
 function calculateTaxAdjusted() {
@@ -43,9 +43,8 @@ function calculateTaxAdjusted() {
     const additionalTax = taxableIncome * (additionalTaxRate / 100);
     
     const totalTax = federalTax + socialSecurityTax + medicareTax + additionalTax;
-    const monthlyTakeHome = (annualIncome - totalTax) / 12;
+    monthlyTakeHome = (annualIncome - totalTax) / 12;
     
-    document.getElementById('monthly-income').value = monthlyTakeHome.toFixed(0);
     updateCharts();
 }
 
@@ -221,7 +220,6 @@ function getAllocationsData() {
 }
 
 function updateCharts() {
-    const monthlyIncome = parseFloat(document.getElementById('monthly-income').value) || 0;
     const { monthlyAllocations, annualAllocations, totalMonthly } = getAllocationsData();
     
     // Calculate expenses vs savings
@@ -237,12 +235,12 @@ function updateCharts() {
         }
     });
     
-    const monthlyUnallocatedSavings = monthlyIncome - totalMonthly;
+    const monthlyUnallocatedSavings = monthlyTakeHome - totalMonthly;
     const totalMonthlySavings = monthlySavingsAllocated + monthlyUnallocatedSavings;
     const totalAnnualSavings = totalMonthlySavings * 12;
     
     // Update summary
-    document.getElementById('summary-income').textContent = `$${monthlyIncome.toLocaleString()}`;
+    document.getElementById('summary-income').textContent = `$${monthlyTakeHome.toLocaleString()}`;
     document.getElementById('summary-allocations').textContent = `$${monthlyExpenses.toLocaleString()}`;
     document.getElementById('summary-savings').textContent = `$${monthlySavingsAllocated.toLocaleString()}`;
     document.getElementById('summary-annual-savings').textContent = `$${(monthlySavingsAllocated * 12).toLocaleString()}`;
@@ -273,8 +271,7 @@ function updateBudgetPieChart(data) {
     
     // Get both monthly and annual data for tooltips
     const { monthlyAllocations, annualAllocations } = getAllocationsData();
-    const monthlyIncome = parseFloat(document.getElementById('monthly-income').value) || 0;
-    const monthlySavings = monthlyIncome - Object.values(monthlyAllocations).reduce((sum, val) => sum + val, 0);
+    const monthlySavings = monthlyTakeHome - Object.values(monthlyAllocations).reduce((sum, val) => sum + val, 0);
     
     budgetPieChart = new Chart(ctx, {
         type: 'pie',
@@ -372,9 +369,8 @@ function updateSavingsChart(monthlySavings, retirementSavings) {
     let colorIndex = 0;
     
     // Calculate total monthly savings (including negative if going into debt)
-    const monthlyIncome = parseFloat(document.getElementById('monthly-income').value) || 0;
     const totalMonthlyExpenses = Object.values(monthlyAllocations).reduce((sum, val) => sum + val, 0);
-    const totalMonthlySavings = monthlyIncome - totalMonthlyExpenses;
+    const totalMonthlySavings = monthlyTakeHome - totalMonthlyExpenses;
     
     // Add total savings line (can go negative)
     const cumulativeTotalSavings = [];
