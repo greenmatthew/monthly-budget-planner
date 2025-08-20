@@ -3,16 +3,48 @@ let nextCategoryId = 1;
 
 function calculateTaxAdjusted() {
     const annualIncomeInput = document.getElementById('annual-income');
+    const additionalTaxRateInput = document.getElementById('additional-tax-rate');
     let annualIncome = parseFloat(annualIncomeInput.value);
+    let additionalTaxRate = parseFloat(additionalTaxRateInput.value) || 0;
     
-    // Force valid integer value, default to 0 if invalid
     if (isNaN(annualIncome) || annualIncome < 0) {
         annualIncome = 0;
         annualIncomeInput.value = 0;
     }
     
-    // Simple tax estimation (roughly 22% effective tax rate)
-    const monthlyTakeHome = (annualIncome * 0.78) / 12;
+    // 2025 tax brackets and standard deduction (single filer)
+    const standardDeduction = 15000;
+    const taxBrackets = [
+        { min: 0, max: 11925, rate: 0.10 },
+        { min: 11925, max: 48475, rate: 0.12 },
+        { min: 48475, max: 103350, rate: 0.22 },
+        { min: 103350, max: 197300, rate: 0.24 },
+        { min: 197300, max: 250525, rate: 0.32 },
+        { min: 250525, max: 626350, rate: 0.35 },
+        { min: 626350, max: Infinity, rate: 0.37 }
+    ];
+    
+    // Calculate federal income tax
+    const taxableIncome = Math.max(0, annualIncome - standardDeduction);
+    let federalTax = 0;
+    
+    for (const bracket of taxBrackets) {
+        if (taxableIncome > bracket.min) {
+            const taxableInBracket = Math.min(taxableIncome, bracket.max) - bracket.min;
+            federalTax += taxableInBracket * bracket.rate;
+        }
+    }
+    
+    // Payroll taxes (Social Security + Medicare)
+    const socialSecurityTax = Math.min(annualIncome * 0.062, 168600 * 0.062);
+    const medicareTax = annualIncome * 0.0145;
+    
+    // Additional tax (state/local) applied to taxable income
+    const additionalTax = taxableIncome * (additionalTaxRate / 100);
+    
+    const totalTax = federalTax + socialSecurityTax + medicareTax + additionalTax;
+    const monthlyTakeHome = (annualIncome - totalTax) / 12;
+    
     document.getElementById('monthly-income').value = monthlyTakeHome.toFixed(0);
     updateCharts();
 }
@@ -474,10 +506,11 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('annual-income').addEventListener('input', function() {
         calculateTaxAdjusted();
     });
-
     document.getElementById('annual-income').addEventListener('blur', function() {
         calculateTaxAdjusted();
     });
+    document.getElementById('additional-tax-rate').addEventListener('input', calculateTaxAdjusted);
+    document.getElementById('additional-tax-rate').addEventListener('blur', calculateTaxAdjusted);
     
     let resizeTimeout;
     window.addEventListener('resize', function() {
