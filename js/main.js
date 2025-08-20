@@ -1,5 +1,4 @@
-let monthlyPieChart, annualPieChart, savingsChart;
-let allocations = [];
+let budgetPieChart, savingsChart;
 
 function calculateTaxAdjusted() {
     const annualIncome = parseFloat(document.getElementById('annual-income').value) || 0;
@@ -160,29 +159,34 @@ function updateCharts() {
     document.getElementById('summary-savings').textContent = `$${monthlySavings.toLocaleString()}`;
     document.getElementById('summary-annual-savings').textContent = `$${annualSavings.toLocaleString()}`;
     
-    // Monthly Pie Chart
-    const monthlyData = { ...monthlyAllocations };
+    // Combined Budget Pie Chart
+    const budgetData = { ...monthlyAllocations };
     if (monthlySavings > 0) {
-        monthlyData['Remaining'] = monthlySavings;
+        budgetData['Remaining'] = monthlySavings;
     }
     
-    updatePieChart('monthly-pie-chart', monthlyData, 'monthlyPieChart');
-    updatePieChart('annual-pie-chart', annualAllocations, 'annualPieChart');
+    updateBudgetPieChart(budgetData);
     updateSavingsChart(monthlySavings, retirementSavings);
 }
 
-function updatePieChart(canvasId, data, chartVar) {
-    const ctx = document.getElementById(canvasId).getContext('2d');
+function updateBudgetPieChart(data) {
+    const ctx = document.getElementById('budget-pie-chart').getContext('2d');
     
-    if (window[chartVar]) {
-        window[chartVar].destroy();
+    if (budgetPieChart) {
+        budgetPieChart.destroy();
     }
     
     const labels = Object.keys(data);
     const values = Object.values(data);
     const colors = generateColors(labels.length);
+    const total = values.reduce((sum, val) => sum + val, 0);
     
-    window[chartVar] = new Chart(ctx, {
+    // Get both monthly and annual data for tooltips
+    const { monthlyAllocations, annualAllocations } = getAllocationsData();
+    const monthlyIncome = parseFloat(document.getElementById('monthly-income').value) || 0;
+    const monthlySavings = monthlyIncome - Object.values(monthlyAllocations).reduce((sum, val) => sum + val, 0);
+    
+    budgetPieChart = new Chart(ctx, {
         type: 'pie',
         data: {
             labels: labels,
@@ -199,9 +203,64 @@ function updatePieChart(canvasId, data, chartVar) {
             plugins: {
                 legend: {
                     position: 'bottom'
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const label = context.label;
+                            const value = context.parsed;
+                            const percentage = ((value / total) * 100).toFixed(1);
+                            
+                            let monthlyAmount, annualAmount;
+                            
+                            if (label === 'Remaining') {
+                                monthlyAmount = monthlySavings;
+                                annualAmount = monthlySavings * 12;
+                            } else {
+                                monthlyAmount = monthlyAllocations[label] || 0;
+                                annualAmount = annualAllocations[label] || 0;
+                            }
+                            
+                            return [
+                                `${label}: ${percentage}%`,
+                                `Monthly: $${monthlyAmount.toLocaleString()}`,
+                                `Annual: $${annualAmount.toLocaleString()}`
+                            ];
+                        }
+                    }
+                },
+                datalabels: {
+                    color: '#000',
+                    font: {
+                        weight: 'bold',
+                        size: 14
+                    },
+                    formatter: function(value, context) {
+                        const percentage = ((value / total) * 100);
+                        return percentage > 5 ? Math.round(percentage) + '%' : '';
+                    }
                 }
             }
-        }
+        },
+        plugins: [{
+            afterDatasetsDraw: function(chart) {
+                const ctx = chart.ctx;
+                chart.data.datasets.forEach((dataset, i) => {
+                    const meta = chart.getDatasetMeta(i);
+                    meta.data.forEach((element, index) => {
+                        const percentage = ((dataset.data[index] / total) * 100);
+                        if (percentage > 5) {
+                            const {x, y} = element.tooltipPosition();
+                            ctx.fillStyle = '#000';
+                            ctx.font = 'bold 14px Arial';
+                            ctx.textAlign = 'center';
+                            ctx.textBaseline = 'middle';
+                            ctx.fillText(Math.round(percentage) + '%', x, y);
+                        }
+                    });
+                });
+            }
+        }]
     });
 }
 
