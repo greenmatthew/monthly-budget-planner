@@ -1,5 +1,5 @@
 let monthlyPieChart, annualPieChart, savingsChart;
-let expenses = [];
+let allocations = [];
 
 function calculateTaxAdjusted() {
     const annualIncome = parseFloat(document.getElementById('annual-income').value) || 0;
@@ -34,21 +34,21 @@ const categoriesList = document.getElementById('categories-list');
     
     // Add event listener to update dropdowns when category name changes
     const input = div.querySelector('input');
-    input.addEventListener('input', updateExpenseCategories);
-    input.addEventListener('blur', updateExpenseCategories);
+    input.addEventListener('input', updateAllocationCategories);
+    input.addEventListener('blur', updateAllocationCategories);
     
-    updateExpenseCategories();
+    updateAllocationCategories();
 }
 
 function removeCategory(btn) {
     btn.parentElement.remove();
-    updateExpenseCategories();
+    updateAllocationCategories();
     updateCharts();
 }
 
-function updateExpenseCategories() {
+function updateAllocationCategories() {
     const categories = getCategories();
-    document.querySelectorAll('.expense-category').forEach(select => {
+    document.querySelectorAll('.allocation-category').forEach(select => {
         const currentValue = select.value;
         select.innerHTML = '';
         categories.forEach(cat => {
@@ -63,28 +63,28 @@ function updateExpenseCategories() {
     });
 }
 
-function addExpense() {
+function addAllocation() {
     const categories = getCategories();
-    const expensesList = document.getElementById('expenses-list');
+    const allocationsList = document.getElementById('allocations-list');
     const div = document.createElement('div');
-    div.className = 'expense-item';
+    div.className = 'allocation-item';
     div.innerHTML = `
-        <input type="text" placeholder="Expense name" class="expense-name" />
-        <select class="expense-category">
+        <input type="text" placeholder="Name" class="allocation-name" />
+        <select class="allocation-category">
             ${categories.map(cat => `<option value="${cat}">${cat}</option>`).join('')}
         </select>
-        <input type="number" placeholder="Amount" class="expense-amount" />
-        <select class="expense-frequency">
+        <input type="number" placeholder="Amount" class="allocation-amount" />
+        <select class="allocation-frequency">
             <option value="monthly">Monthly</option>
             <option value="annual">Annual</option>
             <option value="semi-annual">Semi-Annual</option>
             <option value="bimonthly">Bi-Monthly</option>
         </select>
-        <button class="delete-btn" onclick="removeExpense(this)">
+        <button class="delete-btn" onclick="removeAllocation(this)">
             <span class="material-symbols-outlined">delete</span>
         </button>
     `;
-    expensesList.appendChild(div);
+    allocationsList.appendChild(div);
     
     // Add event listeners for real-time updates
     div.querySelectorAll('input, select').forEach(input => {
@@ -93,23 +93,23 @@ function addExpense() {
     });
 }
 
-function removeExpense(btn) {
+function removeAllocation(btn) {
     btn.parentElement.remove();
     updateCharts();
 }
 
-function getExpensesData() {
-    const expenseItems = document.querySelectorAll('.expense-item');
-    const monthlyExpenses = {};
-    const annualExpenses = {};
+function getAllocationsData() {
+    const allocationItems = document.querySelectorAll('.allocation-item');
+    const monthlyAllocations = {};
+    const annualAllocations = {};
     let totalMonthly = 0;
     let retirementSavings = 0;
     
-    expenseItems.forEach(item => {
-        const name = item.querySelector('.expense-name').value || 'Unnamed';
-        const category = item.querySelector('.expense-category').value;
-        const amount = parseFloat(item.querySelector('.expense-amount').value) || 0;
-        const frequency = item.querySelector('.expense-frequency').value;
+    allocationItems.forEach(item => {
+        const name = item.querySelector('.allocation-name').value || 'Unnamed';
+        const category = item.querySelector('.allocation-category').value;
+        const amount = parseFloat(item.querySelector('.allocation-amount').value) || 0;
+        const frequency = item.querySelector('.allocation-frequency').value;
         
         let monthlyAmount = 0;
         let annualAmount = 0;
@@ -135,8 +135,8 @@ function getExpensesData() {
         
         const displayCategory = category === 'n/a' ? name : category;
         
-        monthlyExpenses[displayCategory] = (monthlyExpenses[displayCategory] || 0) + monthlyAmount;
-        annualExpenses[displayCategory] = (annualExpenses[displayCategory] || 0) + annualAmount;
+        monthlyAllocations[displayCategory] = (monthlyAllocations[displayCategory] || 0) + monthlyAmount;
+        annualAllocations[displayCategory] = (annualAllocations[displayCategory] || 0) + annualAmount;
         totalMonthly += monthlyAmount;
         
         // Check if it's retirement savings
@@ -145,29 +145,29 @@ function getExpensesData() {
         }
     });
     
-    return { monthlyExpenses, annualExpenses, totalMonthly, retirementSavings };
+    return { monthlyAllocations, annualAllocations, totalMonthly, retirementSavings };
 }
 
 function updateCharts() {
     const monthlyIncome = parseFloat(document.getElementById('monthly-income').value) || 0;
-    const { monthlyExpenses, annualExpenses, totalMonthly, retirementSavings } = getExpensesData();
+    const { monthlyAllocations, annualAllocations, totalMonthly, retirementSavings } = getAllocationsData();
     const monthlySavings = monthlyIncome - totalMonthly;
     const annualSavings = monthlySavings * 12;
     
     // Update summary
     document.getElementById('summary-income').textContent = `$${monthlyIncome.toLocaleString()}`;
-    document.getElementById('summary-expenses').textContent = `$${totalMonthly.toLocaleString()}`;
+    document.getElementById('summary-allocations').textContent = `$${totalMonthly.toLocaleString()}`;
     document.getElementById('summary-savings').textContent = `$${monthlySavings.toLocaleString()}`;
     document.getElementById('summary-annual-savings').textContent = `$${annualSavings.toLocaleString()}`;
     
     // Monthly Pie Chart
-    const monthlyData = { ...monthlyExpenses };
+    const monthlyData = { ...monthlyAllocations };
     if (monthlySavings > 0) {
-        monthlyData['Savings'] = monthlySavings;
+        monthlyData['Remaining'] = monthlySavings;
     }
     
     updatePieChart('monthly-pie-chart', monthlyData, 'monthlyPieChart');
-    updatePieChart('annual-pie-chart', annualExpenses, 'annualPieChart');
+    updatePieChart('annual-pie-chart', annualAllocations, 'annualPieChart');
     updateSavingsChart(monthlySavings, retirementSavings);
 }
 
@@ -226,7 +226,7 @@ function updateSavingsChart(monthlySavings, retirementSavings) {
         data: {
             labels: months,
             datasets: [{
-                label: 'Personal Savings',
+                label: 'Unallocated Savings',
                 data: cumulativePersonalSavings,
                 borderColor: '#667eea',
                 backgroundColor: 'rgba(102, 126, 234, 0.1)',
@@ -275,10 +275,10 @@ function generateColors(count) {
     return result;
 }
 
-// Initialize with some default expenses
+// Initialize with some default allocations
 document.addEventListener('DOMContentLoaded', function() {
-    addExpense();
-    addExpense();
+    addAllocation();
+    addAllocation();
     
     // Add event listener for income changes
     document.getElementById('annual-income').addEventListener('input', function() {
