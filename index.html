@@ -44,18 +44,6 @@
                 <button class="btn" onclick="addAllocation()">+ Add Allocation</button>
             </div>
             
-            <!-- Charts Section -->
-            <div class="charts-section">
-                <div class="chart-container">
-                    <h3>Budget Allocations</h3>
-                    <canvas id="budget-pie-chart" class="chart-canvas"></canvas>
-                </div>
-                <div class="chart-container">
-                    <h3>Financial Projection</h3>
-                    <canvas id="savings-chart" class="chart-canvas"></canvas>
-                </div>
-            </div>
-            
             <!-- Summary Section -->
             <div class="summary">
                 <h2>📊 Financial Summary</h2>
@@ -85,7 +73,21 @@
                         <div class="amount" id="summary-annual-cash-flow">$0</div>
                     </div>
                 </div>
+                
+                <!-- Charts in Summary -->
+                <div class="summary-charts">
+                    <div class="chart-container">
+                        <h3>Budget Allocations</h3>
+                        <canvas id="budget-pie-chart" class="chart-canvas"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h3>Financial Projection</h3>
+                        <canvas id="savings-chart" class="chart-canvas"></canvas>
+                    </div>
+                </div>
             </div>
+
+
         </div>
     </div>
 

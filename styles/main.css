@@ -154,30 +154,6 @@ input:focus, select:focus {
     background: #c53030;
 }
 
-.charts-section {
-    grid-column: span 2;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 30px;
-}
-
-.chart-container {
-    background: #f8fafc;
-    border-radius: 15px;
-    padding: 25px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-}
-
-.chart-container h3 {
-    color: #2d3748;
-    margin-bottom: 15px;
-    text-align: center;
-}
-
-.chart-canvas {
-    max-height: 300px;
-}
-
 .summary {
     grid-column: span 3;
     background: linear-gradient(135deg, #38b2ac 0%, #319795 100%);
@@ -232,5 +208,35 @@ input:focus, select:focus {
     .allocation-item {
         grid-template-columns: 1fr;
         text-align: center;
+    }
+}
+
+.summary-charts {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-top: 30px;
+}
+
+.summary .chart-container {
+    background: rgba(255,255,255,0.95);
+    border-radius: 15px;
+    padding: 25px;
+    backdrop-filter: blur(10px);
+}
+
+.summary .chart-container h3 {
+    color: #2d3748;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.summary .chart-canvas {
+    max-height: 300px;
+}
+
+@media (max-width: 768px) {
+    .summary-charts {
+        grid-template-columns: 1fr;
     }
 }
