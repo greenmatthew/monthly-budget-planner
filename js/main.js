@@ -21,7 +21,7 @@ function getCategories() {
 }
 
 function addCategory() {
-    const categoriesList = document.getElementById('categories-list');
+const categoriesList = document.getElementById('categories-list');
     const div = document.createElement('div');
     div.className = 'input-group';
     div.innerHTML = `
@@ -29,6 +29,12 @@ function addCategory() {
         <button class="delete-btn" onclick="removeCategory(this)">×</button>
     `;
     categoriesList.appendChild(div);
+    
+    // Add event listener to update dropdowns when category name changes
+    const input = div.querySelector('input');
+    input.addEventListener('input', updateExpenseCategories);
+    input.addEventListener('blur', updateExpenseCategories);
+    
     updateExpenseCategories();
 }
 
