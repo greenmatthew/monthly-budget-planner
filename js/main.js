@@ -2,7 +2,15 @@ let budgetPieChart, savingsChart;
 let nextCategoryId = 1;
 
 function calculateTaxAdjusted() {
-    const annualIncome = parseFloat(document.getElementById('annual-income').value) || 0;
+    const annualIncomeInput = document.getElementById('annual-income');
+    let annualIncome = parseFloat(annualIncomeInput.value);
+    
+    // Force valid integer value, default to 0 if invalid
+    if (isNaN(annualIncome) || annualIncome < 0) {
+        annualIncome = 0;
+        annualIncomeInput.value = 0;
+    }
+    
     // Simple tax estimation (roughly 22% effective tax rate)
     const monthlyTakeHome = (annualIncome * 0.78) / 12;
     document.getElementById('monthly-income').value = monthlyTakeHome.toFixed(0);
@@ -426,6 +434,10 @@ function generateColors(count) {
 
 // Initialize with some default allocations
 document.addEventListener('DOMContentLoaded', function() {
+    // Set default annual income
+    document.getElementById('annual-income').value = 75000;
+    calculateTaxAdjusted();
+
     // Initialize with default categories and allocations
     const housingCategory = addCategory("Housing", CategoryType.EXPENSE);
     const retirementCategory = addCategory("Retirement Savings", CategoryType.SAVINGS);
@@ -436,14 +448,14 @@ document.addEventListener('DOMContentLoaded', function() {
     addAllocation("Roth IRA", retirementCategory, 500);
     addAllocation("Example Item", -1, 50);
     
-    // Add event listener for income changes
+    // Add event listener for income changes with validation
     document.getElementById('annual-income').addEventListener('input', function() {
-        if (this.value) {
-            calculateTaxAdjusted();
-        }
+        calculateTaxAdjusted();
     });
-    
-    document.getElementById('monthly-income').addEventListener('input', updateCharts);
+
+    document.getElementById('annual-income').addEventListener('blur', function() {
+        calculateTaxAdjusted();
+    });
     
     updateCharts();
 });
