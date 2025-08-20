@@ -1,4 +1,5 @@
 let budgetPieChart, savingsChart;
+let nextCategoryId = 1;
 
 function calculateTaxAdjusted() {
     const annualIncome = parseFloat(document.getElementById('annual-income').value) || 0;
@@ -8,26 +9,46 @@ function calculateTaxAdjusted() {
     updateCharts();
 }
 
+const CategoryType = {
+    EXPENSE: 'expense',
+    SAVINGS: 'savings'
+};
+
+function getNextCategoryId() {
+    return nextCategoryId++;
+}
+
 function getCategories() {
-    const categoryInputs = document.querySelectorAll('#categories-list input[type="text"]');
-    const categories = ['n/a'];
-    categoryInputs.forEach(input => {
-        if (input.value.trim()) {
-            categories.push(input.value.trim());
+    const categoryItems = document.querySelectorAll('#categories-list .category-item');
+    const categories = [{ id: -1, name: 'n/a' }];
+    
+    categoryItems.forEach(item => {
+        const input = item.querySelector('input[type="text"]');
+        const name = input.value.trim();
+        if (name) {
+            let categoryId = item.dataset.categoryId;
+            if (!categoryId) {
+                categoryId = getNextCategoryId();
+                item.dataset.categoryId = categoryId;
+            }
+            categories.push({ id: parseInt(categoryId), name: name });
         }
     });
+    
     return categories;
 }
 
-function addCategory() {
+function addCategory(name = '', type = CategoryType.EXPENSE) {
     const categoriesList = document.getElementById('categories-list');
     const div = document.createElement('div');
+    const categoryId = getNextCategoryId();
     div.className = 'category-item';
+    div.dataset.categoryId = categoryId;
     div.innerHTML = `
-        <input type="text" placeholder="New Category" />
+        <input type="text" placeholder="Category Name" value="${name}" />
         <select class="category-type">
-            <option value="expense">Expense</option>
-            <option value="savings">Savings</option>
+            <option value="expense" ${type === CategoryType.EXPENSE ? 'selected' : ''}>Expense</option>
+            <option value="savings" ${type === CategoryType.SAVINGS ? 'selected' : ''}>Savings</option>
         </select>
         <button class="delete-btn" onclick="removeCategory(this)">
             <span class="material-symbols-outlined">delete</span>
@@ -40,8 +61,10 @@ function addCategory() {
     input.addEventListener('input', updateAllocationCategories);
     input.addEventListener('blur', updateAllocationCategories);
     select.addEventListener('change', updateAllocationCategories);
+    select.addEventListener('change', updateCharts);
     
     updateAllocationCategories();
+    return categoryId;
 }
 
 function removeCategory(btn) {
@@ -57,32 +80,32 @@ function updateAllocationCategories() {
         select.innerHTML = '';
         categories.forEach(cat => {
             const option = document.createElement('option');
-            option.value = cat;
-            option.textContent = cat;
+            option.value = cat.id;
+            option.textContent = cat.name;
             select.appendChild(option);
         });
-        if (categories.includes(currentValue)) {
+        if (categories.find(cat => cat.id === currentValue)) {
             select.value = currentValue;
         }
     });
 }
 
-function addAllocation() {
+function addAllocation(name = '', categoryId = -1, amount = 0, frequency = 'monthly') {
     const categories = getCategories();
     const allocationsList = document.getElementById('allocations-list');
     const div = document.createElement('div');
     div.className = 'allocation-item';
     div.innerHTML = `
-        <input type="text" placeholder="Name" class="allocation-name" />
+        <input type="text" placeholder="Name" class="allocation-name" value="${name}" />
         <select class="allocation-category">
-            ${categories.map(cat => `<option value="${cat}">${cat}</option>`).join('')}
+            ${categories.map(cat => `<option value="${cat.id}" ${cat.id === categoryId ? 'selected' : ''}>${cat.name}</option>`).join('')}
         </select>
-        <input type="number" placeholder="Amount" class="allocation-amount" />
+        <input type="number" placeholder="Amount" class="allocation-amount" value="${amount}" />
         <select class="allocation-frequency">
-            <option value="monthly">Monthly</option>
-            <option value="annual">Annual</option>
-            <option value="semi-annual">Semi-Annual</option>
-            <option value="bimonthly">Bi-Monthly</option>
+            <option value="monthly" ${frequency === 'monthly' ? 'selected' : ''}>Monthly</option>
+            <option value="annual" ${frequency === 'annual' ? 'selected' : ''}>Annual</option>
+            <option value="semi-annual" ${frequency === 'semi-annual' ? 'selected' : ''}>Semi-Annual</option>
+            <option value="bimonthly" ${frequency === 'bimonthly' ? 'selected' : ''}>Bi-Monthly</option>
         </select>
         <button class="delete-btn" onclick="removeAllocation(this)">
             <span class="material-symbols-outlined">delete</span>
@@ -95,6 +118,8 @@ function addAllocation() {
         input.addEventListener('input', updateCharts);
         input.addEventListener('change', updateCharts);
     });
+    
+    updateCharts();
 }
 
 function removeAllocation(btn) {
@@ -104,14 +129,16 @@ function removeAllocation(btn) {
 
 function getAllocationsData() {
     const allocationItems = document.querySelectorAll('.allocation-item');
+    const categories = getCategories();
+    const categoryMap = Object.fromEntries(categories.map(cat => [cat.id, cat.name]));
+    
     const monthlyAllocations = {};
     const annualAllocations = {};
     let totalMonthly = 0;
-    let retirementSavings = 0;
     
     allocationItems.forEach(item => {
         const name = item.querySelector('.allocation-name').value || 'Unnamed';
-        const category = item.querySelector('.allocation-category').value;
+        const categoryId = parseInt(item.querySelector('.allocation-category').value);
         const amount = parseFloat(item.querySelector('.allocation-amount').value) || 0;
         const frequency = item.querySelector('.allocation-frequency').value;
         
@@ -137,14 +164,14 @@ function getAllocationsData() {
                 break;
         }
         
-        const displayCategory = category === 'n/a' ? name : category;
+        const displayCategory = categoryId === -1 ? name : categoryMap[categoryId];
         
         monthlyAllocations[displayCategory] = (monthlyAllocations[displayCategory] || 0) + monthlyAmount;
         annualAllocations[displayCategory] = (annualAllocations[displayCategory] || 0) + annualAmount;
         totalMonthly += monthlyAmount;
     });
     
-    return { monthlyAllocations, annualAllocations, totalMonthly, retirementSavings };
+    return { monthlyAllocations, annualAllocations, totalMonthly };
 }
 
 function updateCharts() {
@@ -393,8 +420,15 @@ function generateColors(count) {
 
 // Initialize with some default allocations
 document.addEventListener('DOMContentLoaded', function() {
-    addAllocation();
-    addAllocation();
+    // Initialize with default categories and allocations
+    const housingCategory = addCategory("Housing", CategoryType.EXPENSE);
+    const retirementCategory = addCategory("Retirement Savings", CategoryType.SAVINGS);
+
+    addAllocation("Rent", housingCategory, 1500);
+    addAllocation("Renter's Insurance", housingCategory, 25);
+    addAllocation("Home Insurance", housingCategory, 125);
+    addAllocation("Roth IRA", retirementCategory, 500);
+    addAllocation("Example Item", -1, 50);
     
     // Add event listener for income changes
     document.getElementById('annual-income').addEventListener('input', function() {
