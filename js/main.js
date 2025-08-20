@@ -225,7 +225,19 @@ function getAllocationsData() {
     return { monthlyAllocations, annualAllocations, totalMonthly, monthlySetaside };
 }
 
+function getAnnualGrossIncome() {
+    return parseFloat(document.getElementById('annual-gross-income').value) || 0;
+}
+
+function getMonthlyGrossIncome() {
+    const annualIncome = getAnnualGrossIncome();
+    return annualIncome / 12;
+}
+
 function updateSummary() {
+    const annualGrossIncome = getAnnualGrossIncome();
+    const monthlyGrossIncome = getMonthlyGrossIncome();
+
     const { monthlyAllocations, annualAllocations, totalMonthly, monthlySetaside } = getAllocationsData();
     
     // Calculate expenses vs savings
@@ -240,19 +252,23 @@ function updateSummary() {
             monthlyExpenses += amount;
         }
     });
+    let annualExpenses = monthlyExpenses * 12;
     
     const monthlyUnallocatedSavings = monthlyTakeHome - totalMonthly;
     const totalMonthlySavings = monthlySavingsAllocated + monthlyUnallocatedSavings;
     const totalAnnualSavings = totalMonthlySavings * 12;
     
     // Update summary
-    document.getElementById('summary-income').textContent = `$${monthlyTakeHome.toFixed(2)}`;
-    document.getElementById('summary-expenses').textContent = `$${monthlyExpenses.toFixed(2)}`;
-    document.getElementById('summary-setaside').textContent = `$${monthlySetaside.toFixed(2)}`;
-    document.getElementById('summary-savings').textContent = `$${monthlySavingsAllocated.toFixed(2)}`;
-    document.getElementById('summary-annual-savings').textContent = `$${(monthlySavingsAllocated * 12).toFixed(2)}`;
-    document.getElementById('summary-cash-flow').textContent = `$${totalMonthlySavings.toFixed(2)}`;
-    document.getElementById('summary-annual-cash-flow').textContent = `$${totalAnnualSavings.toFixed(2)}`;
+    document.getElementById('summary-annual-gross').textContent = `$${annualGrossIncome.toLocaleString()}`;
+    document.getElementById('summary-monthly-gross').textContent = `$${monthlyGrossIncome.toLocaleString()}`;
+    document.getElementById('summary-income').textContent = `$${monthlyTakeHome.toLocaleString()}`;
+    document.getElementById('summary-annual-expenses').textContent = `$${annualExpenses.toLocaleString()}`;
+    document.getElementById('summary-expenses').textContent = `$${monthlyExpenses.toLocaleString()}`;
+    document.getElementById('summary-setaside').textContent = `$${monthlySetaside.toLocaleString()}`;
+    document.getElementById('summary-annual-savings').textContent = `$${(monthlySavingsAllocated * 12).toLocaleString()}`;
+    document.getElementById('summary-savings').textContent = `$${monthlySavingsAllocated.toLocaleString()}`;
+    document.getElementById('summary-annual-cash-flow').textContent = `$${totalAnnualSavings.toLocaleString()}`;
+    document.getElementById('summary-cash-flow').textContent = `$${totalMonthlySavings.toLocaleString()}`;
     
     const budgetData = { ...monthlyAllocations };
     if (monthlyUnallocatedSavings > 0) {
