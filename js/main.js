@@ -80,7 +80,9 @@ function addExpense() {
             <option value="semi-annual">Semi-Annual</option>
             <option value="bimonthly">Bi-Monthly</option>
         </select>
-        <button class="delete-btn" onclick="removeExpense(this)">×</button>
+        <button class="delete-btn" onclick="removeExpense(this)">
+            <span class="material-symbols-outlined">delete</span>
+        </button>
     `;
     expensesList.appendChild(div);
     
