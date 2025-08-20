@@ -20,21 +20,26 @@ function getCategories() {
 }
 
 function addCategory() {
-const categoriesList = document.getElementById('categories-list');
+    const categoriesList = document.getElementById('categories-list');
     const div = document.createElement('div');
     div.className = 'category-item';
     div.innerHTML = `
         <input type="text" placeholder="New Category" />
+        <select class="category-type">
+            <option value="expense">Expense</option>
+            <option value="savings">Savings</option>
+        </select>
         <button class="delete-btn" onclick="removeCategory(this)">
             <span class="material-symbols-outlined">delete</span>
         </button>
     `;
     categoriesList.appendChild(div);
     
-    // Add event listener to update dropdowns when category name changes
     const input = div.querySelector('input');
+    const select = div.querySelector('.category-type');
     input.addEventListener('input', updateAllocationCategories);
     input.addEventListener('blur', updateAllocationCategories);
+    select.addEventListener('change', updateAllocationCategories);
     
     updateAllocationCategories();
 }
@@ -137,11 +142,6 @@ function getAllocationsData() {
         monthlyAllocations[displayCategory] = (monthlyAllocations[displayCategory] || 0) + monthlyAmount;
         annualAllocations[displayCategory] = (annualAllocations[displayCategory] || 0) + annualAmount;
         totalMonthly += monthlyAmount;
-        
-        // Check if it's retirement savings
-        if (name.toLowerCase().includes('retirement') || category.toLowerCase().includes('retirement')) {
-            retirementSavings += annualAmount;
-        }
     });
     
     return { monthlyAllocations, annualAllocations, totalMonthly, retirementSavings };
@@ -272,31 +272,57 @@ function updateSavingsChart(monthlySavings, retirementSavings) {
     }
     
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    const cumulativePersonalSavings = [];
-    const cumulativeRetirementSavings = [];
     
-    for (let i = 1; i <= 12; i++) {
-        cumulativePersonalSavings.push(monthlySavings * i);
-        cumulativeRetirementSavings.push((retirementSavings / 12) * i);
+    // Get all savings categories
+    const { monthlyAllocations, annualAllocations } = getAllocationsData();
+    const savingsCategories = getSavingsCategories();
+    
+    const datasets = [];
+    const colors = ['#667eea', '#38b2ac', '#f093fb', '#4facfe', '#43e97b', '#ffecd2'];
+    let colorIndex = 0;
+    
+    // Add unallocated savings
+    if (monthlySavings > 0) {
+        const cumulativeUnallocated = [];
+        for (let i = 1; i <= 12; i++) {
+            cumulativeUnallocated.push(monthlySavings * i);
+        }
+        
+        datasets.push({
+            label: 'Unallocated Savings',
+            data: cumulativeUnallocated,
+            borderColor: colors[colorIndex],
+            backgroundColor: colors[colorIndex] + '20',
+            tension: 0.4
+        });
+        colorIndex++;
     }
+    
+    // Add each savings category
+    savingsCategories.forEach(category => {
+        const monthlyAmount = monthlyAllocations[category] || 0;
+        if (monthlyAmount > 0) {
+            const cumulativeSavings = [];
+            for (let i = 1; i <= 12; i++) {
+                cumulativeSavings.push(monthlyAmount * i);
+            }
+            
+            datasets.push({
+                label: category,
+                data: cumulativeSavings,
+                borderColor: colors[colorIndex % colors.length],
+                backgroundColor: colors[colorIndex % colors.length] + '20',
+                tension: 0.4
+            });
+            colorIndex++;
+        }
+    });
     
     savingsChart = new Chart(ctx, {
         type: 'line',
         data: {
             labels: months,
-            datasets: [{
-                label: 'Unallocated Savings',
-                data: cumulativePersonalSavings,
-                borderColor: '#667eea',
-                backgroundColor: 'rgba(102, 126, 234, 0.1)',
-                tension: 0.4
-            }, {
-                label: 'Retirement Savings',
-                data: cumulativeRetirementSavings,
-                borderColor: '#38b2ac',
-                backgroundColor: 'rgba(56, 178, 172, 0.1)',
-                tension: 0.4
-            }]
+            datasets: datasets
         },
         options: {
             responsive: true,
@@ -318,6 +344,22 @@ function updateSavingsChart(monthlySavings, retirementSavings) {
             }
         }
     });
+}
+
+function getSavingsCategories() {
+    const categoryItems = document.querySelectorAll('.category-item');
+    const savingsCategories = [];
+    
+    categoryItems.forEach(item => {
+        const name = item.querySelector('input[type="text"]').value.trim();
+        const type = item.querySelector('.category-type').value;
+        
+        if (name && type === 'savings') {
+            savingsCategories.push(name);
+        }
+    });
+    
+    return savingsCategories;
 }
 
 function generateColors(count) {

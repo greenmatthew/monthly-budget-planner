@@ -35,25 +35,21 @@
                 <h2>📂 Categories</h2>
                 <div id="categories-list">
                     <div class="category-item">
-                        <input type="text" placeholder="Housing" value="Housing" />
+                        <input type="text" placeholder="Category Name" value="Housing" />
+                        <select class="category-type">
+                            <option value="expense">Expense</option>
+                            <option value="savings">Savings</option>
+                        </select>
                         <button class="delete-btn" onclick="removeCategory(this)">
                             <span class="material-symbols-outlined">delete</span>
                         </button>
                     </div>
                     <div class="category-item">
-                        <input type="text" placeholder="Food" value="Food" />
-                        <button class="delete-btn" onclick="removeCategory(this)">
-                            <span class="material-symbols-outlined">delete</span>
-                        </button>
-                    </div>
-                    <div class="category-item">
-                        <input type="text" placeholder="Transportation" value="Transportation" />
-                        <button class="delete-btn" onclick="removeCategory(this)">
-                            <span class="material-symbols-outlined">delete</span>
-                        </button>
-                    </div>
-                    <div class="category-item">
-                        <input type="text" placeholder="Entertainment" value="Entertainment" />
+                        <input type="text" placeholder="Category Name" value="Retirement Savings" />
+                        <select class="category-type">
+                            <option value="expense">Expense</option>
+                            <option value="savings" selected>Savings</option>
+                        </select>
                         <button class="delete-btn" onclick="removeCategory(this)">
                             <span class="material-symbols-outlined">delete</span>
                         </button>
