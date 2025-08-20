@@ -2,7 +2,7 @@ let monthlyTakeHome, budgetPieChart, savingsChart;
 let nextCategoryId = 1;
 
 function calculateTaxAdjusted() {
-    const annualIncomeInput = document.getElementById('annual-income');
+    const annualIncomeInput = document.getElementById('annual-gross-income');
     const additionalTaxRateInput = document.getElementById('additional-tax-rate');
     let annualIncome = parseFloat(annualIncomeInput.value);
     let additionalTaxRate = parseFloat(additionalTaxRateInput.value) || 0;
@@ -45,7 +45,7 @@ function calculateTaxAdjusted() {
     const totalTax = federalTax + socialSecurityTax + medicareTax + additionalTax;
     monthlyTakeHome = (annualIncome - totalTax) / 12;
     
-    updateCharts();
+    updateSummary();
 }
 
 const CategoryType = {
@@ -99,14 +99,14 @@ function addCategory(name = '', type = CategoryType.EXPENSE) {
     const select = div.querySelector('.category-type');
     input.addEventListener('input', () => {
         updateAllocationCategories();
-        updateCharts();
+        updateSummary();
     });
     input.addEventListener('blur', () => {
         updateAllocationCategories();
-        updateCharts();
+        updateSummary();
     });
     select.addEventListener('change', updateAllocationCategories);
-    select.addEventListener('change', updateCharts);
+    select.addEventListener('change', updateSummary);
     
     updateAllocationCategories();
     return categoryId;
@@ -115,7 +115,7 @@ function addCategory(name = '', type = CategoryType.EXPENSE) {
 function removeCategory(btn) {
     btn.parentElement.remove();
     updateAllocationCategories();
-    updateCharts();
+    updateSummary();
 }
 
 function updateAllocationCategories() {
@@ -160,16 +160,16 @@ function addAllocation(name = '', categoryId = -1, amount = 0, frequency = 'mont
     
     // Add event listeners for real-time updates
     div.querySelectorAll('input, select').forEach(input => {
-        input.addEventListener('input', updateCharts);
-        input.addEventListener('change', updateCharts);
+        input.addEventListener('input', updateSummary);
+        input.addEventListener('change', updateSummary);
     });
     
-    updateCharts();
+    updateSummary();
 }
 
 function removeAllocation(btn) {
     btn.parentElement.remove();
-    updateCharts();
+    updateSummary();
 }
 
 function getAllocationsData() {
@@ -219,7 +219,7 @@ function getAllocationsData() {
     return { monthlyAllocations, annualAllocations, totalMonthly };
 }
 
-function updateCharts() {
+function updateSummary() {
     const { monthlyAllocations, annualAllocations, totalMonthly } = getAllocationsData();
     
     // Calculate expenses vs savings
@@ -240,14 +240,13 @@ function updateCharts() {
     const totalAnnualSavings = totalMonthlySavings * 12;
     
     // Update summary
-    document.getElementById('summary-income').textContent = `$${monthlyTakeHome.toLocaleString()}`;
-    document.getElementById('summary-allocations').textContent = `$${monthlyExpenses.toLocaleString()}`;
-    document.getElementById('summary-savings').textContent = `$${monthlySavingsAllocated.toLocaleString()}`;
-    document.getElementById('summary-annual-savings').textContent = `$${(monthlySavingsAllocated * 12).toLocaleString()}`;
-    document.getElementById('summary-cash-flow').textContent = `$${totalMonthlySavings.toLocaleString()}`;
-    document.getElementById('summary-annual-cash-flow').textContent = `$${totalAnnualSavings.toLocaleString()}`;
+    document.getElementById('summary-income').textContent = `$${monthlyTakeHome.toFixed(2)}`;
+    document.getElementById('summary-allocations').textContent = `$${monthlyExpenses.toFixed(2)}`;
+    document.getElementById('summary-savings').textContent = `$${monthlySavingsAllocated.toFixed(2)}`;
+    document.getElementById('summary-annual-savings').textContent = `$${(monthlySavingsAllocated * 12).toFixed(2)}`;
+    document.getElementById('summary-cash-flow').textContent = `$${totalMonthlySavings.toFixed(2)}`;
+    document.getElementById('summary-annual-cash-flow').textContent = `$${totalAnnualSavings.toFixed(2)}`;
     
-    // Combined Budget Pie Chart
     const budgetData = { ...monthlyAllocations };
     if (monthlyUnallocatedSavings > 0) {
         budgetData['Remaining'] = monthlyUnallocatedSavings;
@@ -485,7 +484,7 @@ function generateColors(count) {
 // Initialize with some default allocations
 document.addEventListener('DOMContentLoaded', function() {
     // Set default annual income
-    document.getElementById('annual-income').value = 75000;
+    document.getElementById('annual-gross-income').value = 75000;
     calculateTaxAdjusted();
 
     // Initialize with default categories and allocations
@@ -499,10 +498,10 @@ document.addEventListener('DOMContentLoaded', function() {
     addAllocation("Example Item", -1, 50);
     
     // Add event listener for income changes with validation
-    document.getElementById('annual-income').addEventListener('input', function() {
+    document.getElementById('annual-gross-income').addEventListener('input', function() {
         calculateTaxAdjusted();
     });
-    document.getElementById('annual-income').addEventListener('blur', function() {
+    document.getElementById('annual-gross-income').addEventListener('blur', function() {
         calculateTaxAdjusted();
     });
     document.getElementById('additional-tax-rate').addEventListener('input', calculateTaxAdjusted);
@@ -519,9 +518,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 savingsChart.resize();
             }
             // Force a redraw to ensure crisp rendering at new zoom level
-            updateCharts();
+            updateSummary();
         }, 150);
     });
 
-    updateCharts();
+    updateSummary();
 });
