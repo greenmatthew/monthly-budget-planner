@@ -212,8 +212,10 @@ function updateCharts() {
     // Update summary
     document.getElementById('summary-income').textContent = `$${monthlyIncome.toLocaleString()}`;
     document.getElementById('summary-allocations').textContent = `$${monthlyExpenses.toLocaleString()}`;
-    document.getElementById('summary-savings').textContent = `$${totalMonthlySavings.toLocaleString()}`;
-    document.getElementById('summary-annual-savings').textContent = `$${totalAnnualSavings.toLocaleString()}`;
+    document.getElementById('summary-savings').textContent = `$${monthlySavingsAllocated.toLocaleString()}`;
+    document.getElementById('summary-annual-savings').textContent = `$${(monthlySavingsAllocated * 12).toLocaleString()}`;
+    document.getElementById('summary-cash-flow').textContent = `$${totalMonthlySavings.toLocaleString()}`;
+    document.getElementById('summary-annual-cash-flow').textContent = `$${totalAnnualSavings.toLocaleString()}`;
     
     // Combined Budget Pie Chart
     const budgetData = { ...monthlyAllocations };
@@ -337,7 +339,27 @@ function updateSavingsChart(monthlySavings, retirementSavings) {
     const colors = ['#667eea', '#38b2ac', '#f093fb', '#4facfe', '#43e97b', '#ffecd2'];
     let colorIndex = 0;
     
-    // Add unallocated savings
+    // Calculate total monthly savings (including negative if going into debt)
+    const monthlyIncome = parseFloat(document.getElementById('monthly-income').value) || 0;
+    const totalMonthlyExpenses = Object.values(monthlyAllocations).reduce((sum, val) => sum + val, 0);
+    const totalMonthlySavings = monthlyIncome - totalMonthlyExpenses;
+    
+    // Add total savings line (can go negative)
+    const cumulativeTotalSavings = [];
+    for (let i = 1; i <= 12; i++) {
+        cumulativeTotalSavings.push(totalMonthlySavings * i);
+    }
+    
+    datasets.push({
+        label: 'Net Cash Flow',
+        data: cumulativeTotalSavings,
+        borderColor: '#2d3748',
+        backgroundColor: '#2d374820',
+        borderWidth: 3,
+        tension: 0.4
+    });
+    
+    // Add unallocated savings only if positive
     if (monthlySavings > 0) {
         const cumulativeUnallocated = [];
         for (let i = 1; i <= 12; i++) {
@@ -385,7 +407,7 @@ function updateSavingsChart(monthlySavings, retirementSavings) {
             maintainAspectRatio: false,
             scales: {
                 y: {
-                    beginAtZero: true,
+                    beginAtZero: false,
                     ticks: {
                         callback: function(value) {
                             return '$' + value.toLocaleString();
