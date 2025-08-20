@@ -149,24 +149,39 @@ function getAllocationsData() {
 
 function updateCharts() {
     const monthlyIncome = parseFloat(document.getElementById('monthly-income').value) || 0;
-    const { monthlyAllocations, annualAllocations, totalMonthly, retirementSavings } = getAllocationsData();
-    const monthlySavings = monthlyIncome - totalMonthly;
-    const annualSavings = monthlySavings * 12;
+    const { monthlyAllocations, annualAllocations, totalMonthly } = getAllocationsData();
+    
+    // Calculate expenses vs savings
+    const savingsCategories = getSavingsCategories();
+    let monthlyExpenses = 0;
+    let monthlySavingsAllocated = 0;
+    
+    Object.entries(monthlyAllocations).forEach(([category, amount]) => {
+        if (savingsCategories.includes(category)) {
+            monthlySavingsAllocated += amount;
+        } else {
+            monthlyExpenses += amount;
+        }
+    });
+    
+    const monthlyUnallocatedSavings = monthlyIncome - totalMonthly;
+    const totalMonthlySavings = monthlySavingsAllocated + monthlyUnallocatedSavings;
+    const totalAnnualSavings = totalMonthlySavings * 12;
     
     // Update summary
     document.getElementById('summary-income').textContent = `$${monthlyIncome.toLocaleString()}`;
-    document.getElementById('summary-allocations').textContent = `$${totalMonthly.toLocaleString()}`;
-    document.getElementById('summary-savings').textContent = `$${monthlySavings.toLocaleString()}`;
-    document.getElementById('summary-annual-savings').textContent = `$${annualSavings.toLocaleString()}`;
+    document.getElementById('summary-allocations').textContent = `$${monthlyExpenses.toLocaleString()}`;
+    document.getElementById('summary-savings').textContent = `$${totalMonthlySavings.toLocaleString()}`;
+    document.getElementById('summary-annual-savings').textContent = `$${totalAnnualSavings.toLocaleString()}`;
     
     // Combined Budget Pie Chart
     const budgetData = { ...monthlyAllocations };
-    if (monthlySavings > 0) {
-        budgetData['Remaining'] = monthlySavings;
+    if (monthlyUnallocatedSavings > 0) {
+        budgetData['Remaining'] = monthlyUnallocatedSavings;
     }
     
     updateBudgetPieChart(budgetData);
-    updateSavingsChart(monthlySavings, retirementSavings);
+    updateSavingsChart(monthlyUnallocatedSavings);
 }
 
 function updateBudgetPieChart(data) {
