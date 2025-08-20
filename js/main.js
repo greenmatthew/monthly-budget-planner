@@ -479,5 +479,20 @@ document.addEventListener('DOMContentLoaded', function() {
         calculateTaxAdjusted();
     });
     
+    let resizeTimeout;
+    window.addEventListener('resize', function() {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+            if (budgetPieChart) {
+                budgetPieChart.resize();
+            }
+            if (savingsChart) {
+                savingsChart.resize();
+            }
+            // Force a redraw to ensure crisp rendering at new zoom level
+            updateCharts();
+        }, 150);
+    });
+
     updateCharts();
 });
