@@ -180,6 +180,7 @@ function getAllocationsData() {
     const monthlyAllocations = {};
     const annualAllocations = {};
     let totalMonthly = 0;
+    let monthlySetaside = 0;
     
     allocationItems.forEach(item => {
         const name = item.querySelector('.allocation-name').value || 'Unnamed';
@@ -208,6 +209,11 @@ function getAllocationsData() {
                 annualAmount = amount * 6;
                 break;
         }
+
+        // Calculate setaside amount (non-monthly expenses converted to monthly)
+        if (frequency !== 'monthly') {
+            monthlySetaside += monthlyAmount;
+        }
         
         const displayCategory = categoryId === -1 ? name : categoryMap[categoryId];
         
@@ -216,11 +222,11 @@ function getAllocationsData() {
         totalMonthly += monthlyAmount;
     });
     
-    return { monthlyAllocations, annualAllocations, totalMonthly };
+    return { monthlyAllocations, annualAllocations, totalMonthly, monthlySetaside };
 }
 
 function updateSummary() {
-    const { monthlyAllocations, annualAllocations, totalMonthly } = getAllocationsData();
+    const { monthlyAllocations, annualAllocations, totalMonthly, monthlySetaside } = getAllocationsData();
     
     // Calculate expenses vs savings
     const savingsCategories = getSavingsCategories();
@@ -241,7 +247,8 @@ function updateSummary() {
     
     // Update summary
     document.getElementById('summary-income').textContent = `$${monthlyTakeHome.toFixed(2)}`;
-    document.getElementById('summary-allocations').textContent = `$${monthlyExpenses.toFixed(2)}`;
+    document.getElementById('summary-expenses').textContent = `$${monthlyExpenses.toFixed(2)}`;
+    document.getElementById('summary-setaside').textContent = `$${monthlySetaside.toFixed(2)}`;
     document.getElementById('summary-savings').textContent = `$${monthlySavingsAllocated.toFixed(2)}`;
     document.getElementById('summary-annual-savings').textContent = `$${(monthlySavingsAllocated * 12).toFixed(2)}`;
     document.getElementById('summary-cash-flow').textContent = `$${totalMonthlySavings.toFixed(2)}`;

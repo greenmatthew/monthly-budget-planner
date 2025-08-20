@@ -52,17 +52,22 @@
             <div class="summary">
                 <h2>📊 Financial Summary</h2>
                 <div class="summary-grid">
+                    <!-- Statistics -->
                     <div class="summary-item">
                         <h4>Monthly Income</h4>
                         <div class="amount" id="summary-income">$0</div>
                     </div>
                     <div class="summary-item">
                         <h4>Monthly Expenses</h4>
-                        <div class="amount" id="summary-allocations">$0</div>
+                        <div class="amount" id="summary-expenses">$0</div>
                     </div>
                     <div class="summary-item">
                         <h4>Total Monthly Savings</h4>
                         <div class="amount" id="summary-savings">$0</div>
+                    </div>
+                    <div class="summary-item">
+                        <h4>Monthly Setaside<sup>1</sup></h4>
+                        <div class="amount" id="summary-setaside">$0</div>
                     </div>
                     <div class="summary-item">
                         <h4>Total Annual Savings</h4>
@@ -78,7 +83,7 @@
                     </div>
                 </div>
                 
-                <!-- Charts in Summary -->
+                <!-- Charts -->
                 <div class="summary-charts">
                     <div class="chart-container">
                         <h3>Budget Allocations</h3>
@@ -88,6 +93,11 @@
                         <h3>Financial Projection</h3>
                         <canvas id="savings-chart" class="chart-canvas"></canvas>
                     </div>
+                </div>
+
+                <!-- Footnotes -->
+                <div style="font-size: 0.9em; opacity: 0.8; text-align: left; margin-top: 30px;">
+                    <sup>1</sup>Monthly amount you need to save to be able to afford non-monthly expenses.
                 </div>
             </div>
 
