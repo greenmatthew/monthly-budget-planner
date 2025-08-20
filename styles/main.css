@@ -38,10 +38,7 @@ body {
     grid-template-columns: 1fr 1fr;
     gap: 30px;
     padding: 30px;
-}
-
-.allocations-section {
-    grid-column: span 2;
+    align-items: start;
 }
 
 .section {
@@ -49,6 +46,10 @@ body {
     border-radius: 15px;
     padding: 25px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+.allocations-section {
+    grid-column: span 2;
 }
 
 .section h2 {
@@ -163,7 +164,7 @@ input:focus, select:focus {
 }
 
 .summary {
-    grid-column: span 3;
+    grid-column: span 2;
     background: linear-gradient(135deg, #38b2ac 0%, #319795 100%);
     color: white;
     border-radius: 15px;
