@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Monthly Budget Planner</title>
     <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=delete" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
 </head>
 <body>
@@ -31,23 +32,31 @@
             
             <!-- Categories Section -->
             <div class="section">
-                <h2>📂 Expense Categories</h2>
+                <h2>📂 Categories</h2>
                 <div id="categories-list">
-                    <div class="input-group">
+                    <div class="category-item">
                         <input type="text" placeholder="Housing" value="Housing" />
-                        <button class="delete-btn" onclick="removeCategory(this)">×</button>
+                        <button class="delete-btn" onclick="removeCategory(this)">
+                            <span class="material-symbols-outlined">delete</span>
+                        </button>
                     </div>
-                    <div class="input-group">
+                    <div class="category-item">
                         <input type="text" placeholder="Food" value="Food" />
-                        <button class="delete-btn" onclick="removeCategory(this)">×</button>
+                        <button class="delete-btn" onclick="removeCategory(this)">
+                            <span class="material-symbols-outlined">delete</span>
+                        </button>
                     </div>
-                    <div class="input-group">
+                    <div class="category-item">
                         <input type="text" placeholder="Transportation" value="Transportation" />
-                        <button class="delete-btn" onclick="removeCategory(this)">×</button>
+                        <button class="delete-btn" onclick="removeCategory(this)">
+                            <span class="material-symbols-outlined">delete</span>
+                        </button>
                     </div>
-                    <div class="input-group">
+                    <div class="category-item">
                         <input type="text" placeholder="Entertainment" value="Entertainment" />
-                        <button class="delete-btn" onclick="removeCategory(this)">×</button>
+                        <button class="delete-btn" onclick="removeCategory(this)">
+                            <span class="material-symbols-outlined">delete</span>
+                        </button>
                     </div>
                 </div>
                 <button class="btn" onclick="addCategory()">+ Add Category</button>

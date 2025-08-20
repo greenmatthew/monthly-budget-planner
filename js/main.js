@@ -23,10 +23,12 @@ function getCategories() {
 function addCategory() {
 const categoriesList = document.getElementById('categories-list');
     const div = document.createElement('div');
-    div.className = 'input-group';
+    div.className = 'category-item';
     div.innerHTML = `
         <input type="text" placeholder="New Category" />
-        <button class="delete-btn" onclick="removeCategory(this)">×</button>
+        <button class="delete-btn" onclick="removeCategory(this)">
+            <span class="material-symbols-outlined">delete</span>
+        </button>
     `;
     categoriesList.appendChild(div);
     
