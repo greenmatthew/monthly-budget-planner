@@ -58,8 +58,14 @@ function addCategory(name = '', type = CategoryType.EXPENSE) {
     
     const input = div.querySelector('input');
     const select = div.querySelector('.category-type');
-    input.addEventListener('input', updateAllocationCategories);
-    input.addEventListener('blur', updateAllocationCategories);
+    input.addEventListener('input', () => {
+        updateAllocationCategories();
+        updateCharts();
+    });
+    input.addEventListener('blur', () => {
+        updateAllocationCategories();
+        updateCharts();
+    });
     select.addEventListener('change', updateAllocationCategories);
     select.addEventListener('change', updateCharts);
     
@@ -76,7 +82,7 @@ function removeCategory(btn) {
 function updateAllocationCategories() {
     const categories = getCategories();
     document.querySelectorAll('.allocation-category').forEach(select => {
-        const currentValue = select.value;
+        const currentValue = parseInt(select.value);
         select.innerHTML = '';
         categories.forEach(cat => {
             const option = document.createElement('option');
