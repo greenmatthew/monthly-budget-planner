@@ -537,6 +537,140 @@ function generateColors(count) {
     return result;
 }
 
+function exportData() {
+    const data = {
+        income: {
+            annualGrossIncome: parseFloat(document.getElementById('annual-gross-income').value) || 0,
+            additionalTaxRate: parseFloat(document.getElementById('additional-tax-rate').value) || 0
+        },
+        categories: [],
+        allocations: []
+    };
+    
+    // Export categories
+    const categoryItems = document.querySelectorAll('#categories-list .category-item');
+    categoryItems.forEach(item => {
+        const name = item.querySelector('input[type="text"]').value.trim();
+        const type = item.querySelector('.category-type').value;
+        if (name) {
+            data.categories.push({ name, type });
+        }
+    });
+    
+    // Export allocations
+    const allocationItems = document.querySelectorAll('#allocations-list .allocation-item');
+    allocationItems.forEach(item => {
+        const name = item.querySelector('.allocation-name').value.trim();
+        const categoryId = parseInt(item.querySelector('.allocation-category').value);
+        const amount = parseFloat(item.querySelector('.allocation-amount').value) || 0;
+        const frequency = item.querySelector('.allocation-frequency').value;
+        
+        // Find category name
+        let categoryName = 'n/a';
+        if (categoryId !== -1) {
+            const categories = getCategories();
+            const category = categories.find(cat => cat.id === categoryId);
+            if (category) {
+                categoryName = category.name;
+            }
+        }
+        
+        if (name || amount > 0) {
+            data.allocations.push({ name, category: categoryName, amount, frequency });
+        }
+    });
+    
+    // Create and download file
+    const dataStr = JSON.stringify(data, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    
+    // Create timestamped filename
+    const now = new Date();
+    const date = now.toLocaleDateString('en-US', {
+        month: '2-digit',
+        day: '2-digit', 
+        year: 'numeric'
+    }).replace(/\//g, '-');
+    const time = now.toLocaleTimeString('en-US', {
+        hour12: false,
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+    }).replace(/:/g, '-');
+    
+    const filename = `budget_plan_${date}_${time}.json`;
+    
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(dataBlob);
+    link.download = filename;
+    link.click();
+    
+    URL.revokeObjectURL(link.href);
+}
+
+function importData() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    
+    input.onchange = function(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const data = JSON.parse(e.target.result);
+                loadData(data);
+            } catch (error) {
+                alert('Error reading file. Please make sure it\'s a valid JSON file.');
+                console.error('Import error:', error);
+            }
+        };
+        reader.readAsText(file);
+    };
+    
+    input.click();
+}
+
+function loadData(data) {
+    // Clear existing data
+    document.getElementById('categories-list').innerHTML = '';
+    document.getElementById('allocations-list').innerHTML = '';
+    nextCategoryId = 1;
+    
+    // Load income
+    if (data.income) {
+        document.getElementById('annual-gross-income').value = data.income.annualGrossIncome || 0;
+        document.getElementById('additional-tax-rate').value = data.income.additionalTaxRate || 0;
+        calculateTaxAdjusted();
+    }
+    
+    // Load categories and create a mapping
+    const categoryMapping = { 'n/a': -1 };
+    if (data.categories) {
+        data.categories.forEach(category => {
+            const categoryId = addCategory(category.name, category.type);
+            categoryMapping[category.name] = categoryId;
+        });
+    }
+    
+    // Load allocations
+    if (data.allocations) {
+        data.allocations.forEach(allocation => {
+            const categoryId = categoryMapping[allocation.category] || -1;
+            addAllocation(
+                allocation.name || '',
+                categoryId,
+                allocation.amount || 0,
+                allocation.frequency || 'monthly'
+            );
+        });
+    }
+    
+    updateSummary();
+}
+
 // Initialize with some default allocations
 document.addEventListener('DOMContentLoaded', function() {
     // Set default annual income

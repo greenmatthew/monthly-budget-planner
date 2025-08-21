@@ -52,6 +52,10 @@ body {
     padding-bottom: 10px;
 }
 
+.file-section {
+    grid-column: span 2;
+}
+
 .allocations-section {
     grid-column: span 2;
 }
@@ -120,6 +124,10 @@ body {
         margin-bottom: 15px;
         page-break-inside: avoid;
         padding: 15px !important;
+    }
+
+    .file-section {
+        display: none !important;
     }
 
     .allocations-section {
