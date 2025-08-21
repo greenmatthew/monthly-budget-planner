@@ -4,6 +4,16 @@
     box-sizing: border-box;
 }
 
+.header a {
+    color: #a0aec0;
+    text-decoration: underline;
+    transition: color 0.3s ease;
+}
+
+.header a:hover {
+    color: #e2e8f0;
+}
+
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: linear-gradient(45deg, #667eea, #764ba2, #667eea, #764ba2);
@@ -287,4 +297,22 @@ input:focus, select:focus {
     .summary-charts {
         grid-template-columns: 1fr;
     }
+}
+
+.footer {
+    background: transparent;
+    color: rgba(255, 255, 255, 0.8);
+    text-align: center;
+    padding: 20px;
+    font-size: 0.9em;
+}
+
+.footer a {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: underline;
+    transition: color 0.3s ease;
+}
+
+.footer a:hover {
+    color: white;
 }
