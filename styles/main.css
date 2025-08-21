@@ -262,6 +262,20 @@ input:focus, select:focus {
     margin-top: 30px;
 }
 
+.summary-item sup a {
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.summary-item sup a:hover {
+    text-decoration: underline;
+}
+
+#summary-footnotes {
+    scroll-margin-top: 20px;
+}
+
 @media (max-width: 1200px) {
     .content {
         grid-template-columns: 1fr;
