@@ -212,7 +212,6 @@ input:focus, select:focus {
 
 .summary {
     grid-column: span 2;
-    color: white;
     border-radius: 15px;
     padding: 25px;
     text-align: center;
@@ -243,6 +242,13 @@ input:focus, select:focus {
 .summary-item .amount {
     font-size: 1.5em;
     font-weight: bold;
+}
+
+.summary-footnotes {
+    font-size: 0.9em;
+    opacity: 0.8;
+    text-align: left;
+    margin-top: 30px;
 }
 
 @media (max-width: 1200px) {
