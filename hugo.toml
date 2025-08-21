@@ -3,7 +3,7 @@ title = "Monthly Budget Planner"
 disableKinds = ["taxonomy", "term", "RSS", "sitemap"]
 
 [params]
-  version = "1.0.4"
+  version = "1.1.0"
 
 [build]
   writeStats = false
