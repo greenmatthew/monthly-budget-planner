@@ -405,12 +405,29 @@ input:focus, select:focus {
     }
     
     .allocation-item {
-        display: flex !important;
-        flex-wrap: wrap;
-        gap: 5px;
+        display: grid !important;
+        grid-template-columns: auto auto auto auto auto;
+        gap: 10px !important;
+        align-items: center;
         border-bottom: 1px solid #eee;
         padding: 8px !important;
         font-size: 11px;
+    }
+
+    .allocation-category,
+    .allocation-frequency {
+        display: none !important;
+    }
+
+    .allocation-category-display,
+    .allocation-frequency-display {
+        display: inline-block !important;
+        padding: 4px 12px;
+        border: 1px solid #ccc;
+        background: #f5f5f5;
+        font-size: 12px;
+        border-radius: 3px;
+        font-weight: 500;
     }
     
     .summary-grid {
@@ -446,6 +463,11 @@ input:focus, select:focus {
 
 @media screen {
     .category-type-display {
+        display: none;
+    }
+
+    .allocation-category-display,
+    .allocation-frequency-display {
         display: none;
     }
 }

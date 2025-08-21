@@ -135,6 +135,8 @@ function updateAllocationCategories() {
     const categories = getCategories();
     document.querySelectorAll('.allocation-category').forEach(select => {
         const currentValue = parseInt(select.value);
+        const display = select.parentElement.querySelector('.allocation-category-display');
+        
         select.innerHTML = '';
         categories.forEach(cat => {
             const option = document.createElement('option');
@@ -142,8 +144,13 @@ function updateAllocationCategories() {
             option.textContent = cat.name;
             select.appendChild(option);
         });
+        
         if (categories.find(cat => cat.id === currentValue)) {
             select.value = currentValue;
+            const selectedCategory = categories.find(cat => cat.id === currentValue);
+            if (display && selectedCategory) {
+                display.textContent = selectedCategory.name;
+            }
         }
     });
 }
@@ -159,6 +166,7 @@ function addAllocation(name = '', categoryId = -1, amount = 0, frequency = 'mont
         <select class="allocation-category">
             ${categories.map(cat => `<option value="${cat.id}" ${cat.id === categoryId ? 'selected' : ''}>${cat.name}</option>`).join('')}
         </select>
+        <span class="allocation-category-display">${categories.find(cat => cat.id === categoryId)?.name || 'n/a'}</span>
         <input type="number" placeholder="Amount" class="allocation-amount" value="${amount}" />
         <select class="allocation-frequency">
             <option value="monthly" ${frequency === 'monthly' ? 'selected' : ''}>Monthly</option>
@@ -166,6 +174,7 @@ function addAllocation(name = '', categoryId = -1, amount = 0, frequency = 'mont
             <option value="semi-annual" ${frequency === 'semi-annual' ? 'selected' : ''}>Semi-Annual</option>
             <option value="bimonthly" ${frequency === 'bimonthly' ? 'selected' : ''}>Bi-Monthly</option>
         </select>
+        <span class="allocation-frequency-display">${frequency.charAt(0).toUpperCase() + frequency.slice(1)}</span>
         <button class="delete-btn" onclick="removeAllocation(this)">
             <span class="material-symbols-outlined">delete</span>
         </button>
@@ -176,6 +185,22 @@ function addAllocation(name = '', categoryId = -1, amount = 0, frequency = 'mont
     div.querySelectorAll('input, select').forEach(input => {
         input.addEventListener('input', updateSummary);
         input.addEventListener('change', updateSummary);
+    });
+    
+    // Add specific listeners to update display spans
+    const categorySelect = div.querySelector('.allocation-category');
+    const frequencySelect = div.querySelector('.allocation-frequency');
+    const categoryDisplay = div.querySelector('.allocation-category-display');
+    const frequencyDisplay = div.querySelector('.allocation-frequency-display');
+    
+    categorySelect.addEventListener('change', () => {
+        const categories = getCategories();
+        const selectedCategory = categories.find(cat => cat.id === parseInt(categorySelect.value));
+        categoryDisplay.textContent = selectedCategory ? selectedCategory.name : 'n/a';
+    });
+    
+    frequencySelect.addEventListener('change', () => {
+        frequencyDisplay.textContent = frequencySelect.value.charAt(0).toUpperCase() + frequencySelect.value.slice(1);
     });
     
     updateSummary();
