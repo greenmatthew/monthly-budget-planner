@@ -1,9 +1,3 @@
-const APP_VERSION = '1.0.1'
-
-function getVersion() {
-    return APP_VERSION;
-}
-
 let monthlyTakeHome, budgetPieChart, savingsChart;
 let nextCategoryId = 1;
 
@@ -545,10 +539,6 @@ function generateColors(count) {
 
 // Initialize with some default allocations
 document.addEventListener('DOMContentLoaded', function() {
-    // Set version
-    const versionElement = document.getElementById('version-link');
-    versionElement.innerHTML = `<a href="https://github.com/greenmatthew/monthly-budget-planner/releases/tag/v${getVersion()}"><small>v${getVersion()}</small></a>`;
-
     // Set default annual income
     document.getElementById('annual-gross-income').value = 75000;
     calculateTaxAdjusted();
