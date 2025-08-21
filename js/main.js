@@ -96,6 +96,7 @@ function addCategory(name = '', type = CategoryType.EXPENSE) {
             <option value="expense" ${type === CategoryType.EXPENSE ? 'selected' : ''}>Expense</option>
             <option value="savings" ${type === CategoryType.SAVINGS ? 'selected' : ''}>Savings</option>
         </select>
+        <span class="category-type-display">${type === CategoryType.SAVINGS ? 'Savings' : 'Expense'}</span>
         <button class="delete-btn" onclick="removeCategory(this)">
             <span class="material-symbols-outlined">delete</span>
         </button>
@@ -104,6 +105,8 @@ function addCategory(name = '', type = CategoryType.EXPENSE) {
     
     const input = div.querySelector('input');
     const select = div.querySelector('.category-type');
+    const display = div.querySelector('.category-type-display');
+    
     input.addEventListener('input', () => {
         updateAllocationCategories();
         updateSummary();
@@ -112,8 +115,11 @@ function addCategory(name = '', type = CategoryType.EXPENSE) {
         updateAllocationCategories();
         updateSummary();
     });
-    select.addEventListener('change', updateAllocationCategories);
-    select.addEventListener('change', updateSummary);
+    select.addEventListener('change', () => {
+        display.textContent = select.value === 'savings' ? 'Savings' : 'Expense';
+        updateAllocationCategories();
+        updateSummary();
+    });
     
     updateAllocationCategories();
     return categoryId;

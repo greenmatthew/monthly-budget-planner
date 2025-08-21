@@ -347,3 +347,105 @@ input:focus, select:focus {
 .footer a:hover {
     color: white;
 }
+
+@media print {
+    body {
+        background: white !important;
+        animation: none !important;
+        padding: 10px !important;
+        font-size: 12px;
+        color: black !important;
+    }
+    
+    .container {
+        max-width: none !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        margin: 0 !important;
+    }
+    
+    .header {
+        background: white !important;
+        color: black !important;
+        page-break-after: avoid;
+        padding: 15px !important;
+    }
+    
+    .content {
+        display: block !important;
+        gap: 15px !important;
+        padding: 15px !important;
+    }
+    
+    .section {
+        border: 1px solid #ccc !important;
+        background: white !important;
+        box-shadow: none !important;
+        margin-bottom: 15px;
+        page-break-inside: avoid;
+        padding: 15px !important;
+    }
+
+    .category-type-display {
+        display: inline-block !important;
+        padding: 4px 12px;
+        border: 1px solid #ccc;
+        background: #f5f5f5;
+        font-size: 12px;
+        border-radius: 3px;
+        font-weight: 500;
+    }
+
+    .category-item select {
+        display: none !important;
+    }
+    
+    .allocations-section {
+        grid-column: auto !important;
+    }
+    
+    .allocation-item {
+        display: flex !important;
+        flex-wrap: wrap;
+        gap: 5px;
+        border-bottom: 1px solid #eee;
+        padding: 8px !important;
+        font-size: 11px;
+    }
+    
+    .summary-grid {
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 10px !important;
+        font-size: 10px;
+    }
+    
+    .summary-charts {
+        display: none !important; /* Charts don't print well */
+    }
+    
+    .footer {
+        background: white !important;
+        color: black !important;
+        page-break-before: avoid;
+    }
+    
+    .drag-handle,
+    .delete-btn,
+    .btn {
+        display: none !important;
+    }
+    
+    input, select {
+        border: none !important;
+        background: transparent !important;
+        font-size: inherit;
+        color: black !important;
+    }
+}
+
+@media screen {
+    .category-type-display {
+        display: none;
+    }
+}
