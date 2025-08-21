@@ -4,8 +4,6 @@
     box-sizing: border-box;
 }
 
-
-
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: linear-gradient(45deg, #667eea, #764ba2, #667eea, #764ba2);
@@ -29,8 +27,6 @@ body {
     box-shadow: 0 20px 40px rgba(0,0,0,0.1);
     overflow: hidden;
 }
-
-
 
 .content {
     display: grid;
@@ -111,13 +107,6 @@ body {
         margin: 0 !important;
     }
     
-    .header {
-        background: white !important;
-        color: black !important;
-        page-break-after: avoid;
-        padding: 15px !important;
-    }
-    
     .content {
         display: block !important;
         gap: 15px !important;
@@ -142,15 +131,5 @@ body {
         grid-template-columns: repeat(3, 1fr) !important;
         gap: 10px !important;
         font-size: 10px;
-    }
-    
-    .summary-charts {
-        display: none !important; /* Charts don't print well */
-    }
-    
-    .footer {
-        background: white !important;
-        color: black !important;
-        page-break-before: avoid;
     }
 }

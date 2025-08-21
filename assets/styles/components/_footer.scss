@@ -15,3 +15,12 @@
 .footer a:hover {
     color: white;
 }
+
+@media print {
+    .footer {
+        background: white !important;
+        color: black !important;
+        page-break-before: avoid;
+    }
+}
+    
