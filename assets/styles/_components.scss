@@ -1,0 +1,122 @@
+@import 'components/allocation';
+@import 'components/category';
+@import 'components/summary-item';
+
+.input-group {
+    margin-bottom: 15px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #4a5568;
+    font-weight: 500;
+}
+
+input[type="number"], input[type="text"], select {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.3s;
+}
+
+input:focus, select:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.note {
+    display: block;
+    margin-top: 5px;
+    color: #718096;
+    font-size: 0.85em;
+    font-style: italic;
+}
+
+.btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: transform 0.2s;
+    margin-top: 10px;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+}
+
+.drag-handle {
+    cursor: grab;
+    color: #718096;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.drag-handle:active {
+    cursor: grabbing;
+}
+
+.drag-handle::before {
+    content: "⋮⋮";
+    font-size: 14px;
+    line-height: 1;
+    letter-spacing: 2px;
+}
+
+.sortable-ghost {
+    opacity: 0.4;
+}
+
+.sortable-chosen {
+    background: #e2e8f0;
+}
+
+.material-symbols-outlined {
+  font-variation-settings:
+  'FILL' 0,
+  'wght' 400,
+  'GRAD' 0,
+  'opsz' 24
+}
+
+.delete-btn {
+    background: #e53e3e;
+    color: white;
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+    flex-shrink: 0;
+}
+
+.delete-btn:hover {
+    background: #c53030;
+}
+
+@media print {
+    .drag-handle,
+    .delete-btn,
+    .btn {
+        display: none !important;
+    }
+    
+    input, select {
+        border: none !important;
+        background: transparent !important;
+        font-size: inherit;
+        color: black !important;
+    }
+}

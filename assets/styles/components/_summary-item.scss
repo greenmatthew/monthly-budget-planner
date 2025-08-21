@@ -1,0 +1,69 @@
+.summary-item {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    border: 2px solid #e2e8f0;
+    color: #2d3748;
+}
+
+.summary-item h4 {
+    font-size: 0.9em;
+    opacity: 0.9;
+    margin-bottom: 5px;
+}
+
+.summary-item .amount {
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+.summary-footnotes {
+    font-size: 0.9em;
+    opacity: 0.8;
+    text-align: left;
+    margin-top: 30px;
+}
+
+.summary-item sup a {
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.summary-item sup a:hover {
+    text-decoration: underline;
+}
+
+#summary-footnotes {
+    scroll-margin-top: 20px;
+}
+
+.summary-charts {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-top: 30px;
+}
+
+.summary .chart-container {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    border: 2px solid #e2e8f0;
+}
+
+.summary .chart-container h3 {
+    color: #2d3748;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.summary .chart-canvas {
+    max-height: 300px;
+}
+
+@media (max-width: 768px) {
+    .summary-charts {
+        grid-template-columns: 1fr;
+    }
+}

@@ -1,0 +1,36 @@
+.category-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.category-item input {
+    flex: 2;
+}
+
+.category-item select {
+    flex: 1;
+}
+
+@media screen {
+    .category-type-display {
+        display: none;
+    }
+}
+
+@media print {
+    .category-item select {
+        display: none !important;
+    }
+
+    .category-type-display {
+        display: inline-block !important;
+        padding: 4px 12px;
+        border: 1px solid #ccc;
+        background: #f5f5f5;
+        font-size: 12px;
+        border-radius: 3px;
+        font-weight: 500;
+    }
+}
