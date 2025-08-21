@@ -84,6 +84,7 @@ function addCategory(name = '', type = CategoryType.EXPENSE) {
     div.className = 'category-item';
     div.dataset.categoryId = categoryId;
     div.innerHTML = `
+        <div class="drag-handle"></div>
         <input type="text" placeholder="Category Name" value="${name}" />
         <select class="category-type">
             <option value="expense" ${type === CategoryType.EXPENSE ? 'selected' : ''}>Expense</option>
@@ -141,6 +142,7 @@ function addAllocation(name = '', categoryId = -1, amount = 0, frequency = 'mont
     const div = document.createElement('div');
     div.className = 'allocation-item';
     div.innerHTML = `
+        <div class="drag-handle"></div>
         <input type="text" placeholder="Name" class="allocation-name" value="${name}" />
         <select class="allocation-category">
             ${categories.map(cat => `<option value="${cat.id}" ${cat.id === categoryId ? 'selected' : ''}>${cat.name}</option>`).join('')}
@@ -546,4 +548,20 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     updateSummary();
+
+    // Initialize drag and drop for categories
+    new Sortable(document.getElementById('categories-list'), {
+        handle: '.drag-handle',
+        animation: 150,
+        ghostClass: 'sortable-ghost',
+        chosenClass: 'sortable-chosen'
+    });
+
+    // Initialize drag and drop for allocations
+    new Sortable(document.getElementById('allocations-list'), {
+        handle: '.drag-handle',
+        animation: 150,
+        ghostClass: 'sortable-ghost',
+        chosenClass: 'sortable-chosen'
+    });
 });
