@@ -1,4 +1,4 @@
-baseURL = "/"
+baseURL = "/monthly-budget-planner/"
 title = "Monthly Budget Planner"
 disableKinds = ["taxonomy", "term", "RSS", "sitemap"]
 
