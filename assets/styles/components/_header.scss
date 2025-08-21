@@ -31,6 +31,23 @@
     text-decoration: underline;
 }
 
+.made-by-link {
+    font-size: 0.6em;
+    opacity: 1.0;
+    margin-bottom: 12px;
+}
+
+.made-by-link a {
+    color: #a0aec0;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.made-by-link a:hover {
+    opacity: 1;
+    text-decoration: underline;
+}
+
 @media print {
     .header {
         background: white !important;

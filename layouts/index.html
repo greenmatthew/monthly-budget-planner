@@ -19,6 +19,7 @@
     <div class="container">
         <div class="header">
             <h1>💰 Monthly Budget Planner <span id="version-link"><a href="https://github.com/greenmatthew/monthly-budget-planner/releases/tag/v{{ .Site.Params.version }}"><small>v{{ .Site.Params.version }}</small></a></span></h1>
+            <div class="made-by-link">Made by <a href="/#about-me">Matthew Green</a></div>
             <p>I built this monthly budget planner for myself since I didn't like any of the free options available.</p>
             <p style="margin-top: 10px;">You can find more of my projects on <a href="/">this website</a>. Check out the source code on <a href="https://git.matthewgreen.gg/mgreen/monthly-budget-planner.git">my git server</a> or on <a href="https://github.com/greenmatthew/monthly-budget-planner.git">GitHub</a>.</p>
         </div>
@@ -27,6 +28,7 @@
             <!-- File Section -->
             <div class="section file-section">
                 <h2>💾 File</h2>
+                <small class="note">Your budget auto-saves locally in your browser, but to ensure your data isn't lost, manually save to a JSON file using the Save Budget button above.</small>
                 <div style="display: flex; gap: 10px; margin-bottom: 15px;">
                     <button class="btn" onclick="exportData()">💾 Save Budget</button>
                     <button class="btn" onclick="importData()">📁 Load Budget</button>
@@ -35,7 +37,6 @@
                 <div style="margin-bottom: 10px;">
                     <small class="note" id="auto-save-status">Auto-saved a moment ago...</small>
                 </div>
-                <small class="note">Your budget auto-saves locally in your browser, but to ensure your data isn't lost, manually save to a JSON file using the Save Budget button above.</small>
             </div>
 
             <!-- Income Section -->
