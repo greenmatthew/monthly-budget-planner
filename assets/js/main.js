@@ -104,15 +104,13 @@ function addCategory(name = '', type = CategoryType.EXPENSE) {
     input.addEventListener('input', () => {
         updateAllocationCategories();
         updateSummary();
-    });
-    input.addEventListener('blur', () => {
-        updateAllocationCategories();
-        updateSummary();
+        autoSave();
     });
     select.addEventListener('change', () => {
         display.textContent = select.value === 'savings' ? 'Savings' : 'Expense';
         updateAllocationCategories();
         updateSummary();
+        autoSave();
     });
     
     updateAllocationCategories();
@@ -123,6 +121,7 @@ function removeCategory(btn) {
     btn.parentElement.remove();
     updateAllocationCategories();
     updateSummary();
+    autoSave();
 }
 
 function updateAllocationCategories() {
@@ -187,6 +186,18 @@ function addAllocation(name = '', categoryId = -1, amount = 0, frequency = 'mont
     const categoryDisplay = div.querySelector('.allocation-category-display');
     const frequencyDisplay = div.querySelector('.allocation-frequency-display');
     
+    
+    // Add event listeners for real-time updates
+    div.querySelectorAll('input, select').forEach(input => {
+        input.addEventListener('input', () => {
+            updateSummary();
+            autoSave();
+        });
+        input.addEventListener('change', () => {
+            updateSummary();
+            autoSave();
+        });
+    });
     categorySelect.addEventListener('change', () => {
         const categories = getCategories();
         const selectedCategory = categories.find(cat => cat.id === parseInt(categorySelect.value));
@@ -203,6 +214,7 @@ function addAllocation(name = '', categoryId = -1, amount = 0, frequency = 'mont
 function removeAllocation(btn) {
     btn.parentElement.remove();
     updateSummary();
+    autoSave();
 }
 
 function getAllocationsData() {
@@ -537,6 +549,93 @@ function generateColors(count) {
     return result;
 }
 
+// Auto-save functionality
+function autoSave() {
+    const data = {
+        income: {
+            annualGrossIncome: parseFloat(document.getElementById('annual-gross-income').value) || 0,
+            additionalTaxRate: parseFloat(document.getElementById('additional-tax-rate').value) || 0
+        },
+        categories: [],
+        allocations: []
+    };
+    
+    // Save categories
+    const categoryItems = document.querySelectorAll('#categories-list .category-item');
+    categoryItems.forEach(item => {
+        const name = item.querySelector('input[type="text"]').value.trim();
+        const type = item.querySelector('.category-type').value;
+        if (name) {
+            data.categories.push({ name, type });
+        }
+    });
+    
+    // Save allocations
+    const allocationItems = document.querySelectorAll('#allocations-list .allocation-item');
+    allocationItems.forEach(item => {
+        const name = item.querySelector('.allocation-name').value.trim();
+        const categoryId = parseInt(item.querySelector('.allocation-category').value);
+        const amount = parseFloat(item.querySelector('.allocation-amount').value) || 0;
+        const frequency = item.querySelector('.allocation-frequency').value;
+        
+        // Find category name
+        let categoryName = 'n/a';
+        if (categoryId !== -1) {
+            const categories = getCategories();
+            const category = categories.find(cat => cat.id === categoryId);
+            if (category) {
+                categoryName = category.name;
+            }
+        }
+        
+        data.allocations.push({ name, category: categoryName, amount, frequency });
+    });
+    
+    localStorage.setItem('budgetPlannerData', JSON.stringify(data));
+}
+
+function autoLoad() {
+    const savedData = localStorage.getItem('budgetPlannerData');
+    if (savedData) {
+        try {
+            console.info('Loading auto-saved data');
+            const data = JSON.parse(savedData);
+            loadData(data);
+            return true;
+        } catch (error) {
+            console.error('Error loading auto-saved data:', error);
+            localStorage.removeItem('budgetPlannerData');
+        }
+    }
+    return false;
+}
+
+function resetToDefaults() {
+    localStorage.removeItem('budgetPlannerData');
+    
+    // Clear existing data
+    document.getElementById('categories-list').innerHTML = '';
+    document.getElementById('allocations-list').innerHTML = '';
+    nextCategoryId = 1;
+    
+    // Reset income
+    document.getElementById('annual-gross-income').value = 75000;
+    document.getElementById('additional-tax-rate').value = 0;
+    calculateTaxAdjusted();
+    
+    // Load defaults
+    const housingCategory = addCategory("Housing", CategoryType.EXPENSE);
+    const retirementCategory = addCategory("Retirement Savings", CategoryType.SAVINGS);
+
+    addAllocation("Rent", housingCategory, 1500);
+    addAllocation("Renter's Insurance", housingCategory, 25);
+    addAllocation("Home Insurance", housingCategory, 125);
+    addAllocation("Roth IRA", retirementCategory, 500);
+    addAllocation("Example Item", -1, 50);
+    
+    updateSummary();
+}
+
 function exportData() {
     const data = {
         income: {
@@ -669,33 +768,25 @@ function loadData(data) {
     }
     
     updateSummary();
+    autoSave();
 }
 
 // Initialize with some default allocations
 document.addEventListener('DOMContentLoaded', function() {
-    // Set default annual income
-    document.getElementById('annual-gross-income').value = 75000;
-    calculateTaxAdjusted();
-
-    // Initialize with default categories and allocations
-    const housingCategory = addCategory("Housing", CategoryType.EXPENSE);
-    const retirementCategory = addCategory("Retirement Savings", CategoryType.SAVINGS);
-
-    addAllocation("Rent", housingCategory, 1500);
-    addAllocation("Renter's Insurance", housingCategory, 25);
-    addAllocation("Home Insurance", housingCategory, 125);
-    addAllocation("Roth IRA", retirementCategory, 500);
-    addAllocation("Example Item", -1, 50);
+    // Try to load saved data, if none exists load defaults
+    if (!autoLoad()) {
+        resetToDefaults();
+    }
     
-    // Add event listener for income changes with validation
-    document.getElementById('annual-gross-income').addEventListener('input', function() {
+    // Add event listeners for auto-save
+    document.getElementById('annual-gross-income').addEventListener('input', () => {
         calculateTaxAdjusted();
+        autoSave();
     });
-    document.getElementById('annual-gross-income').addEventListener('blur', function() {
+    document.getElementById('additional-tax-rate').addEventListener('input', () => {
         calculateTaxAdjusted();
+        autoSave();
     });
-    document.getElementById('additional-tax-rate').addEventListener('input', calculateTaxAdjusted);
-    document.getElementById('additional-tax-rate').addEventListener('blur', calculateTaxAdjusted);
     
     let resizeTimeout;
     window.addEventListener('resize', function() {
@@ -707,14 +798,13 @@ document.addEventListener('DOMContentLoaded', function() {
             if (savingsChart) {
                 savingsChart.resize();
             }
-            // Force a redraw to ensure crisp rendering at new zoom level
             updateSummary();
         }, 150);
     });
 
     updateSummary();
 
-    // Initialize drag and drop for categories
+    // Initialize drag and drop
     new Sortable(document.getElementById('categories-list'), {
         handle: '.drag-handle',
         animation: 150,
@@ -722,7 +812,6 @@ document.addEventListener('DOMContentLoaded', function() {
         chosenClass: 'sortable-chosen'
     });
 
-    // Initialize drag and drop for allocations
     new Sortable(document.getElementById('allocations-list'), {
         handle: '.drag-handle',
         animation: 150,

@@ -30,6 +30,7 @@
                 <div style="display: flex; gap: 10px; margin-bottom: 15px;">
                     <button class="btn" onclick="exportData()">💾 Save Budget</button>
                     <button class="btn" onclick="importData()">📁 Load Budget</button>
+                    <button class="btn" onclick="resetToDefaults()">🔄 Reset to Defaults</button>
                 </div>
                 <small class="note">Save your budget data as a JSON file to your computer or load a previously saved file. No data is sent to any server.</small>
             </div>
@@ -39,12 +40,12 @@
                 <h2>💵 Income</h2>
                 <div class="input-group">
                     <label for="annual-gross-income">Annual Gross Income</label>
-                    <input type="number" id="annual-gross-income" placeholder="Enter annual income" />
+                    <input type="number" id="annual-gross-income" placeholder="Enter annual income" step="1000" />
                     <small class="note">Your annual salary before any taxes or deductions. This gets adjusted using 2025 tax rates for all the following calculations</small>
                 </div>
                 <div class="input-group" style="margin-top: 15px;">
                     <label for="additional-tax-rate">Additional Tax Rate (%)</label>
-                    <input type="number" id="additional-tax-rate" placeholder="State tax rate, etc." value="0" step="0.1" />
+                    <input type="number" id="additional-tax-rate" placeholder="State tax rate, etc." step="0.1" />
                     <small class="note">
                         Enter as percentage (e.g., 5.5 for 5.5%). Applied to taxable income for state/local taxes.
                     </small>
