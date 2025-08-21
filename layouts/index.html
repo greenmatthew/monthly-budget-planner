@@ -32,7 +32,10 @@
                     <button class="btn" onclick="importData()">📁 Load Budget</button>
                     <button class="btn" onclick="resetToDefaults()">🔄 Reset to Defaults</button>
                 </div>
-                <small class="note">Save your budget data as a JSON file to your computer or load a previously saved file. No data is sent to any server.</small>
+                <div style="margin-bottom: 10px;">
+                    <small class="note" id="auto-save-status">Auto-saved a moment ago...</small>
+                </div>
+                <small class="note">Your budget auto-saves locally in your browser, but to ensure your data isn't lost, manually save to a JSON file using the Save Budget button above.</small>
             </div>
 
             <!-- Income Section -->

@@ -549,8 +549,40 @@ function generateColors(count) {
     return result;
 }
 
+let lastAutoSaveTime = Date.now();
+
+function updateAutoSaveStatus() {
+    const now = Date.now();
+    const diff = now - lastAutoSaveTime;
+    const minutes = Math.floor(diff / 60000);
+    const hours = Math.floor(diff / 3600000);
+    const days = Math.floor(diff / 86400000);
+    
+    const statusElement = document.getElementById('auto-save-status');
+    if (!statusElement) return;
+    
+    if (diff < 60000) {
+        statusElement.textContent = "Auto-saved a moment ago...";
+    } else if (minutes < 60) {
+        statusElement.textContent = `Auto-saved ${minutes} minute${minutes === 1 ? '' : 's'} ago...`;
+    } else if (hours < 24) {
+        statusElement.textContent = `Auto-saved ${hours} hour${hours === 1 ? '' : 's'} ago...`;
+    } else {
+        statusElement.textContent = `Auto-saved ${days} day${days === 1 ? '' : 's'} ago...`;
+    }
+}
+
 // Auto-save functionality
 function autoSave() {
+    const data = getCurrentBudgetData(); // You'll need to extract this from exportData()
+    localStorage.setItem('monthlyBudgetPlanner_autoSave', JSON.stringify(data));
+    lastAutoSaveTime = Date.now();
+    localStorage.setItem('monthlyBudgetPlanner_lastSave', lastAutoSaveTime.toString());
+    updateAutoSaveStatus();
+}
+
+function getCurrentBudgetData() {
+    // Extract the data creation logic from exportData()
     const data = {
         income: {
             annualGrossIncome: parseFloat(document.getElementById('annual-gross-income').value) || 0,
@@ -560,7 +592,6 @@ function autoSave() {
         allocations: []
     };
     
-    // Save categories
     const categoryItems = document.querySelectorAll('#categories-list .category-item');
     categoryItems.forEach(item => {
         const name = item.querySelector('input[type="text"]').value.trim();
@@ -570,7 +601,6 @@ function autoSave() {
         }
     });
     
-    // Save allocations
     const allocationItems = document.querySelectorAll('#allocations-list .allocation-item');
     allocationItems.forEach(item => {
         const name = item.querySelector('.allocation-name').value.trim();
@@ -578,7 +608,6 @@ function autoSave() {
         const amount = parseFloat(item.querySelector('.allocation-amount').value) || 0;
         const frequency = item.querySelector('.allocation-frequency').value;
         
-        // Find category name
         let categoryName = 'n/a';
         if (categoryId !== -1) {
             const categories = getCategories();
@@ -588,10 +617,12 @@ function autoSave() {
             }
         }
         
-        data.allocations.push({ name, category: categoryName, amount, frequency });
+        if (name || amount > 0) {
+            data.allocations.push({ name, category: categoryName, amount, frequency });
+        }
     });
     
-    localStorage.setItem('budgetPlannerData', JSON.stringify(data));
+    return data;
 }
 
 function autoLoad() {
@@ -611,29 +642,11 @@ function autoLoad() {
 }
 
 function resetToDefaults() {
-    localStorage.removeItem('budgetPlannerData');
-    
-    // Clear existing data
-    document.getElementById('categories-list').innerHTML = '';
-    document.getElementById('allocations-list').innerHTML = '';
-    nextCategoryId = 1;
-    
-    // Reset income
-    document.getElementById('annual-gross-income').value = 75000;
-    document.getElementById('additional-tax-rate').value = 0;
-    calculateTaxAdjusted();
-    
-    // Load defaults
-    const housingCategory = addCategory("Housing", CategoryType.EXPENSE);
-    const retirementCategory = addCategory("Retirement Savings", CategoryType.SAVINGS);
-
-    addAllocation("Rent", housingCategory, 1500);
-    addAllocation("Renter's Insurance", housingCategory, 25);
-    addAllocation("Home Insurance", housingCategory, 125);
-    addAllocation("Roth IRA", retirementCategory, 500);
-    addAllocation("Example Item", -1, 50);
-    
-    updateSummary();
+    if (confirm('This will reset all your data to the default budget. Are you sure?')) {
+        localStorage.removeItem('monthlyBudgetPlanner_autoSave');
+        localStorage.removeItem('monthlyBudgetPlanner_lastSave');
+        location.reload();
+    }
 }
 
 function exportData() {
@@ -773,20 +786,37 @@ function loadData(data) {
 
 // Initialize with some default allocations
 document.addEventListener('DOMContentLoaded', function() {
-    // Try to load saved data, if none exists load defaults
-    if (!autoLoad()) {
-        resetToDefaults();
+    // Try to load auto-saved data first
+    const autoSaved = localStorage.getItem('monthlyBudgetPlanner_autoSave');
+    const lastSaveTime = localStorage.getItem('monthlyBudgetPlanner_lastSave');
+    
+    if (lastSaveTime) {
+        lastAutoSaveTime = parseInt(lastSaveTime);
     }
     
-    // Add event listeners for auto-save
-    document.getElementById('annual-gross-income').addEventListener('input', () => {
-        calculateTaxAdjusted();
-        autoSave();
-    });
-    document.getElementById('additional-tax-rate').addEventListener('input', () => {
-        calculateTaxAdjusted();
-        autoSave();
-    });
+    if (autoSaved) {
+        try {
+            const data = JSON.parse(autoSaved);
+            loadData(data);
+        } catch (error) {
+            console.error('Failed to load auto-saved data:', error);
+            // Fall back to defaults
+            initializeDefaults();
+        }
+    } else {
+        initializeDefaults();
+    }
+    
+    // Set up auto-save on changes
+    const autoSaveDebounced = debounce(autoSave, 1000);
+    
+    // Add auto-save listeners
+    document.addEventListener('input', autoSaveDebounced);
+    document.addEventListener('change', autoSaveDebounced);
+    
+    // Update auto-save status every 30 seconds
+    updateAutoSaveStatus();
+    setInterval(updateAutoSaveStatus, 30000);
     
     let resizeTimeout;
     window.addEventListener('resize', function() {
@@ -819,3 +849,30 @@ document.addEventListener('DOMContentLoaded', function() {
         chosenClass: 'sortable-chosen'
     });
 });
+
+function initializeDefaults() {
+    document.getElementById('annual-gross-income').value = 75000;
+    document.getElementById('additional-tax-rate').value = 0;
+    calculateTaxAdjusted();
+
+    const housingCategory = addCategory("Housing", CategoryType.EXPENSE);
+    const retirementCategory = addCategory("Retirement Savings", CategoryType.SAVINGS);
+
+    addAllocation("Rent", housingCategory, 1500);
+    addAllocation("Renter's Insurance", housingCategory, 25);
+    addAllocation("Home Insurance", housingCategory, 125);
+    addAllocation("Roth IRA", retirementCategory, 500);
+    addAllocation("Example Item", -1, 50);
+}
+
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
