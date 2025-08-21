@@ -1,0 +1,9 @@
+baseURL = "/"
+title = "Monthly Budget Planner"
+disableKinds = ["taxonomy", "term", "RSS", "sitemap"]
+
+[build]
+  writeStats = false
+  
+[minify]
+  minifyOutput = true
