@@ -91,7 +91,7 @@ body {
 
 @media (max-width: 768px) {
     body {
-        padding: 10px;
+        padding: 5px;
     }
     
     .container {
@@ -100,19 +100,20 @@ body {
     
     .content {
         display: block;
-        padding: 15px;
-        gap: 20px;
+        padding: 4px;
+        gap: 15px;
     }
     
     .section {
-        margin-bottom: 20px;
-        padding: 20px;
+        margin-bottom: 15px;
+        padding: 4px;
         border-radius: 12px;
+        border-width: 2.5px;
     }
     
     .section h2 {
         font-size: 1.2em;
-        margin-bottom: 15px;
+        margin-bottom: 12px;
     }
 
     .charts-section {
@@ -121,17 +122,17 @@ body {
     
     .summary-grid {
         grid-template-columns: 1fr;
-        gap: 12px;
+        gap: 2px;
     }
     
     .summary-item {
-        padding: 15px;
+        padding: 12px;
         text-align: center;
     }
     
     .summary-item h4 {
         font-size: 0.8em;
-        margin-bottom: 8px;
+        margin-bottom: 6px;
     }
     
     .summary-item .amount {
