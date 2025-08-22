@@ -61,6 +61,10 @@ body {
     grid-column: span 2;
 }
 
+.summary {
+    grid-column: span 2;
+}
+
 .summary-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -101,8 +105,8 @@ body {
     }
     
     .summary-grid {
-        grid-template-columns: 1fr;
-        gap: 2px;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
     }
     
     .summary-item {
