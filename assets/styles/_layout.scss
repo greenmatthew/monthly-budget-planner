@@ -90,8 +90,52 @@ body {
 }
 
 @media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+    
+    .container {
+        border-radius: 15px;
+    }
+    
+    .content {
+        display: block;
+        padding: 15px;
+        gap: 20px;
+    }
+    
+    .section {
+        margin-bottom: 20px;
+        padding: 20px;
+        border-radius: 12px;
+    }
+    
+    .section h2 {
+        font-size: 1.2em;
+        margin-bottom: 15px;
+    }
+
     .charts-section {
         grid-template-columns: 1fr;
+    }
+    
+    .summary-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .summary-item {
+        padding: 15px;
+        text-align: center;
+    }
+    
+    .summary-item h4 {
+        font-size: 0.8em;
+        margin-bottom: 8px;
+    }
+    
+    .summary-item .amount {
+        font-size: 1.4em;
     }
 }
 

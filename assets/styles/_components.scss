@@ -108,6 +108,55 @@ input:focus, select:focus {
     background: #c53030;
 }
 
+@media (max-width: 768px) {
+    .input-group {
+        margin-bottom: 20px;
+    }
+    
+    .input-group label {
+        font-size: 1.1em;
+        margin-bottom: 8px;
+        font-weight: 600;
+    }
+    
+    input[type="number"], input[type="text"], select {
+        padding: 16px;
+        font-size: 16px;
+        border-radius: 10px;
+        min-height: 48px;
+    }
+    
+    .btn {
+        padding: 16px 24px;
+        font-size: 16px;
+        border-radius: 10px;
+        min-height: 48px;
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    
+    .category-item {
+        flex-direction: column;
+        gap: 12px;
+        padding: 20px;
+        background: white;
+        border-radius: 10px;
+        margin-bottom: 15px;
+    }
+    
+    .category-item .delete-btn {
+        align-self: center;
+        width: 48px;
+        height: 48px;
+    }
+    
+    .file-section .btn {
+        width: auto;
+        margin-right: 10px;
+        margin-bottom: 15px;
+    }
+}
+
 @media print {
     .drag-handle,
     .delete-btn,
