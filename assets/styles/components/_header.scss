@@ -48,6 +48,23 @@
     text-decoration: underline;
 }
 
+@media (max-width: 768px) {
+    .header {
+        padding: 25px 20px;
+    }
+    
+    .header h1 {
+        font-size: 2em;
+        line-height: 1.2;
+    }
+    
+    .header p {
+        font-size: 0.9em;
+        line-height: 1.4;
+        margin-bottom: 8px;
+    }
+}
+
 @media print {
     .header {
         background: white !important;
