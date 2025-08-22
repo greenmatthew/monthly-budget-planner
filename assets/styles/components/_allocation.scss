@@ -12,36 +12,29 @@
 
 @media (max-width: 768px) {
     .allocation-item {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        padding: 20px;
-        margin-bottom: 15px;
+        display: grid !important;
+        grid-template-columns: auto 2fr 1fr 0.8fr 1fr auto;
+        gap: 4px !important;
+        padding: 6px !important;
+        margin-bottom: 6px !important;
+        align-items: center;
     }
     
     .allocation-item .drag-handle {
-        order: -1;
-        align-self: center;
-        padding: 10px;
-        background: #f8fafc;
-        border-radius: 8px;
-        margin-bottom: 8px;
+        padding: 2px;
+        background: transparent;
+        margin: 0;
+        height: 24px;
+        display: flex;
+        align-items: center;
     }
     
-    .allocation-item input,
-    .allocation-item select {
-        width: 100%;
-        padding: 16px;
-        font-size: 16px;
-        border-radius: 10px;
-        border: 2px solid #e2e8f0;
+    .allocation-item .drag-handle::before {
+        font-size: 10px;
     }
     
     .allocation-item .delete-btn {
-        align-self: center;
-        width: 48px;
-        height: 48px;
-        margin-top: 8px;
+        margin: 0;
     }
 }
 

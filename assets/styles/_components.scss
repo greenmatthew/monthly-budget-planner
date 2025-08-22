@@ -129,7 +129,32 @@ input:focus, select:focus {
         padding: 16px;
         font-size: 16px;
         border-radius: 10px;
-        min-height: 48px;
+        min-height: 32px;
+    }
+    
+    // Override for items inside category-item and allocation-item
+    .category-item input[type="text"],
+    .category-item select,
+    .allocation-item input[type="text"],
+    .allocation-item input[type="number"],
+    .allocation-item select {
+        padding: 4px 6px !important;
+        font-size: 12px !important;
+        height: 24px !important;
+        border-radius: 4px !important;
+        border: 1px solid #e2e8f0 !important;
+        line-height: 1 !important;
+        min-height: 24px !important;
+    }
+    
+    // All delete buttons on mobile
+    .delete-btn {
+        width: 24px !important;
+        height: 24px !important;
+    }
+    
+    .delete-btn .material-symbols-outlined {
+        transform: scale(0.7);
     }
     
     .btn {
@@ -139,21 +164,6 @@ input:focus, select:focus {
         min-height: 48px;
         width: 100%;
         margin-bottom: 10px;
-    }
-    
-    .category-item {
-        flex-direction: column;
-        gap: 12px;
-        padding: 20px;
-        background: white;
-        border-radius: 10px;
-        margin-bottom: 15px;
-    }
-    
-    .category-item .delete-btn {
-        align-self: center;
-        width: 48px;
-        height: 48px;
     }
     
     .file-section {
