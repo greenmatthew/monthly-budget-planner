@@ -318,12 +318,7 @@ function updateSummary() {
     document.getElementById('summary-annual-cash-flow').textContent = `$${annualCashFlow.toFixed(2)}`;
     document.getElementById('summary-cash-flow').textContent = `$${monthlyCashFlow.toFixed(2)}`;
     
-    const budgetData = { ...monthlyAllocations };
-    if (monthlyCashFlow > 0) {
-        budgetData['Remaining'] = monthlyCashFlow;
-    }
-    
-    updateBudgetPieChart(budgetData);
+    updateBudgetPieChart();
     updateSavingsChart(monthlyCashFlow);
 }
 
@@ -334,14 +329,18 @@ function updateBudgetPieChart(data) {
         budgetPieChart.destroy();
     }
     
-    const labels = Object.keys(data);
-    const values = Object.values(data);
-    const colors = generateColors(labels.length);
-    const total = values.reduce((sum, val) => sum + val, 0);
-    
-    // Get both monthly and annual data for tooltips
     const { monthlyAllocations, annualAllocations } = getAllocationsData();
-    const monthlySavings = monthlyTakeHome - Object.values(monthlyAllocations).reduce((sum, val) => sum + val, 0);
+    const monthlyCashFlow = monthlyTakeHome - Object.values(monthlyAllocations).reduce((sum, val) => sum + val, 0);
+    
+    // Build data with allocations + net cash flow
+    const labels = [...Object.keys(monthlyAllocations), 'Net Cash Flow'];
+    const values = [...Object.values(monthlyAllocations), monthlyCashFlow];
+    
+    // Generate colors, using red for negative cash flow
+    const colors = generateColors(labels.length - 1);
+    colors.push(monthlyCashFlow >= 0 ? '#28a745' : '#dc3545'); // Green for positive, red for negative
+    
+    const total = monthlyTakeHome; // This ensures slices sum to take-home
     
     budgetPieChart = new Chart(ctx, {
         type: 'pie',
@@ -366,13 +365,13 @@ function updateBudgetPieChart(data) {
                         label: function(context) {
                             const label = context.label;
                             const value = context.parsed;
-                            const percentage = ((value / total) * 100).toFixed(1);
+                            const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : '0.0';
                             
                             let monthlyAmount, annualAmount;
                             
-                            if (label === 'Remaining') {
-                                monthlyAmount = monthlySavings;
-                                annualAmount = monthlySavings * 12;
+                            if (label === 'Net Cash Flow') {
+                                monthlyAmount = monthlyCashFlow;
+                                annualAmount = monthlyCashFlow * 12;
                             } else {
                                 monthlyAmount = monthlyAllocations[label] || 0;
                                 annualAmount = annualAllocations[label] || 0;
@@ -393,7 +392,8 @@ function updateBudgetPieChart(data) {
                         size: 14
                     },
                     formatter: function(value, context) {
-                        const percentage = ((value / total) * 100);
+                        if (total <= 0) return '';
+                        const percentage = Math.abs((value / total) * 100);
                         return percentage > 5 ? Math.round(percentage) + '%' : '';
                     }
                 }
@@ -405,7 +405,8 @@ function updateBudgetPieChart(data) {
                 chart.data.datasets.forEach((dataset, i) => {
                     const meta = chart.getDatasetMeta(i);
                     meta.data.forEach((element, index) => {
-                        const percentage = ((dataset.data[index] / total) * 100);
+                        if (total <= 0) return;
+                        const percentage = Math.abs((dataset.data[index] / total) * 100);
                         if (percentage > 5) {
                             const {x, y} = element.tooltipPosition();
                             ctx.fillStyle = '#000';
