@@ -873,7 +873,7 @@ function initializeDefaults() {
 
     addAllocation("Rent", housingCategory, 1500);
     addAllocation("Renter's Insurance", housingCategory, 25);
-    addAllocation("Home Insurance", housingCategory, 125);
+    addAllocation("Home Insurance", housingCategory, 256);
     addAllocation("Roth IRA", retirementCategory, 500);
     addAllocation("Example Item", -1, 50);
 }
