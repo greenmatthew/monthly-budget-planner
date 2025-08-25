@@ -1,4 +1,4 @@
-let monthlyTakeHome, budgetPieChart, savingsChart;
+let monthlyTakeHome, annualTakeHome, budgetPieChart, savingsChart;
 let nextCategoryId = 1;
 
 function calculateTaxAdjusted() {
@@ -43,7 +43,8 @@ function calculateTaxAdjusted() {
     const additionalTax = taxableIncome * (additionalTaxRate / 100);
     
     const totalTax = federalTax + socialSecurityTax + medicareTax + additionalTax;
-    monthlyTakeHome = (annualIncome - totalTax) / 12;
+    annualTakeHome = annualIncome - totalTax;
+    monthlyTakeHome = annualTakeHome / 12;
     
     updateSummary();
 }
@@ -298,30 +299,32 @@ function updateSummary() {
         }
     });
     let annualExpenses = monthlyExpenses * 12;
+    let annualSavingsAllocated = monthlySavingsAllocated * 12;
     
-    const monthlyUnallocatedSavings = monthlyTakeHome - totalMonthly;
-    const totalMonthlySavings = monthlySavingsAllocated + monthlyUnallocatedSavings;
-    const totalAnnualSavings = totalMonthlySavings * 12;
+    // Cash flow = take home - all allocations (expenses + savings)
+    const monthlyCashFlow = monthlyTakeHome - totalMonthly;
+    const annualCashFlow = monthlyCashFlow * 12;
     
     // Update summary
     document.getElementById('summary-annual-gross').textContent = `$${annualGrossIncome.toFixed(2)}`;
     document.getElementById('summary-monthly-gross').textContent = `$${monthlyGrossIncome.toFixed(2)}`;
     document.getElementById('summary-income').textContent = `$${monthlyTakeHome.toFixed(2)}`;
+    document.getElementById('summary-annual-take-home').textContent = `$${annualTakeHome.toFixed(2)}`;
     document.getElementById('summary-annual-expenses').textContent = `$${annualExpenses.toFixed(2)}`;
     document.getElementById('summary-expenses').textContent = `$${monthlyExpenses.toFixed(2)}`;
     document.getElementById('summary-setaside').textContent = `$${monthlySetaside.toFixed(2)}`;
     document.getElementById('summary-annual-savings').textContent = `$${(monthlySavingsAllocated * 12).toFixed(2)}`;
     document.getElementById('summary-savings').textContent = `$${monthlySavingsAllocated.toFixed(2)}`;
-    document.getElementById('summary-annual-cash-flow').textContent = `$${totalAnnualSavings.toFixed(2)}`;
-    document.getElementById('summary-cash-flow').textContent = `$${totalMonthlySavings.toFixed(2)}`;
+    document.getElementById('summary-annual-cash-flow').textContent = `$${annualCashFlow.toFixed(2)}`;
+    document.getElementById('summary-cash-flow').textContent = `$${monthlyCashFlow.toFixed(2)}`;
     
     const budgetData = { ...monthlyAllocations };
-    if (monthlyUnallocatedSavings > 0) {
-        budgetData['Remaining'] = monthlyUnallocatedSavings;
+    if (monthlyCashFlow > 0) {
+        budgetData['Remaining'] = monthlyCashFlow;
     }
     
     updateBudgetPieChart(budgetData);
-    updateSavingsChart(monthlyUnallocatedSavings);
+    updateSavingsChart(monthlyCashFlow);
 }
 
 function updateBudgetPieChart(data) {
@@ -418,7 +421,7 @@ function updateBudgetPieChart(data) {
     });
 }
 
-function updateSavingsChart(monthlySavings, retirementSavings) {
+function updateSavingsChart(monthlyCashFlow) {
     const ctx = document.getElementById('savings-chart').getContext('2d');
     
     if (savingsChart) {
@@ -428,67 +431,69 @@ function updateSavingsChart(monthlySavings, retirementSavings) {
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     
     // Get all savings categories
-    const { monthlyAllocations, annualAllocations } = getAllocationsData();
+    const { monthlyAllocations } = getAllocationsData();
     const savingsCategories = getSavingsCategories();
     
     const datasets = [];
     const colors = ['#667eea', '#38b2ac', '#f093fb', '#4facfe', '#43e97b', '#ffecd2'];
     let colorIndex = 0;
     
-    // Calculate total monthly savings (including negative if going into debt)
-    const totalMonthlyExpenses = Object.values(monthlyAllocations).reduce((sum, val) => sum + val, 0);
-    const totalMonthlySavings = monthlyTakeHome - totalMonthlyExpenses;
-    
-    // Add total savings line (can go negative)
-    const cumulativeTotalSavings = [];
+    // Add Net Cash Flow line (can go negative)
+    const cumulativeCashFlow = [];
     for (let i = 1; i <= 12; i++) {
-        cumulativeTotalSavings.push(totalMonthlySavings * i);
+        cumulativeCashFlow.push(monthlyCashFlow * i);
     }
     
     datasets.push({
         label: 'Net Cash Flow',
-        data: cumulativeTotalSavings,
+        data: cumulativeCashFlow,
         borderColor: '#2d3748',
         backgroundColor: '#2d374820',
         borderWidth: 3,
         tension: 0.4
     });
     
-    // Add unallocated savings only if positive
-    if (monthlySavings > 0) {
-        const cumulativeUnallocated = [];
+    // Calculate total monthly savings allocated
+    let totalMonthlySavingsAllocated = 0;
+    const activeSavingsCategories = savingsCategories.filter(category => (monthlyAllocations[category] || 0) > 0);
+    
+    activeSavingsCategories.forEach(category => {
+        totalMonthlySavingsAllocated += monthlyAllocations[category] || 0;
+    });
+    
+    // Add Total Savings line only if there are multiple savings categories
+    if (totalMonthlySavingsAllocated > 0 && activeSavingsCategories.length > 1) {
+        const cumulativeTotalSavings = [];
         for (let i = 1; i <= 12; i++) {
-            cumulativeUnallocated.push(monthlySavings * i);
+            cumulativeTotalSavings.push(totalMonthlySavingsAllocated * i);
         }
         
         datasets.push({
-            label: 'Unallocated Savings',
-            data: cumulativeUnallocated,
-            borderColor: colors[colorIndex],
-            backgroundColor: colors[colorIndex] + '20',
+            label: 'Total Savings',
+            data: cumulativeTotalSavings,
+            borderColor: '#764ba2',
+            backgroundColor: '#764ba220',
+            borderWidth: 2,
+            tension: 0.4
+        });
+    }
+    
+    // Add each individual savings category
+    activeSavingsCategories.forEach(category => {
+        const monthlyAmount = monthlyAllocations[category] || 0;
+        const cumulativeSavings = [];
+        for (let i = 1; i <= 12; i++) {
+            cumulativeSavings.push(monthlyAmount * i);
+        }
+        
+        datasets.push({
+            label: category,
+            data: cumulativeSavings,
+            borderColor: colors[colorIndex % colors.length],
+            backgroundColor: colors[colorIndex % colors.length] + '20',
             tension: 0.4
         });
         colorIndex++;
-    }
-    
-    // Add each savings category
-    savingsCategories.forEach(category => {
-        const monthlyAmount = monthlyAllocations[category] || 0;
-        if (monthlyAmount > 0) {
-            const cumulativeSavings = [];
-            for (let i = 1; i <= 12; i++) {
-                cumulativeSavings.push(monthlyAmount * i);
-            }
-            
-            datasets.push({
-                label: category,
-                data: cumulativeSavings,
-                borderColor: colors[colorIndex % colors.length],
-                backgroundColor: colors[colorIndex % colors.length] + '20',
-                tension: 0.4
-            });
-            colorIndex++;
-        }
     });
     
     savingsChart = new Chart(ctx, {
