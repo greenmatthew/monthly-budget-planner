@@ -832,6 +832,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 150);
     });
 
+    document.getElementById('annual-gross-income').addEventListener('input', calculateTaxAdjusted);
+    document.getElementById('additional-tax-rate').addEventListener('input', calculateTaxAdjusted);
+
     updateSummary();
 
     // Initialize drag and drop
