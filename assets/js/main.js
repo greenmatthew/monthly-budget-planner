@@ -436,10 +436,8 @@ function updateSavingsChart(monthlyCashFlow) {
     const savingsCategories = getSavingsCategories();
     
     const datasets = [];
-    const colors = ['#667eea', '#38b2ac', '#f093fb', '#4facfe', '#43e97b', '#ffecd2'];
-    let colorIndex = 0;
     
-    // Add Net Cash Flow line (can go negative)
+    // Add Net Cash Flow line (hardcoded color)
     const cumulativeCashFlow = [];
     for (let i = 1; i <= 12; i++) {
         cumulativeCashFlow.push(monthlyCashFlow * i);
@@ -448,8 +446,8 @@ function updateSavingsChart(monthlyCashFlow) {
     datasets.push({
         label: 'Net Cash Flow',
         data: cumulativeCashFlow,
-        borderColor: '#2d3748',
-        backgroundColor: '#2d374820',
+        borderColor: monthlyCashFlow >= 0 ? '#28a745' : '#dc3545',
+        backgroundColor: monthlyCashFlow >= 0 ? '#28a74520' : '#dc354520',
         borderWidth: 3,
         tension: 0.4
     });
@@ -462,7 +460,7 @@ function updateSavingsChart(monthlyCashFlow) {
         totalMonthlySavingsAllocated += monthlyAllocations[category] || 0;
     });
     
-    // Add Total Savings line only if there are multiple savings categories
+    // Add Total Savings line only if there are multiple savings categories (hardcoded color)
     if (totalMonthlySavingsAllocated > 0 && activeSavingsCategories.length > 1) {
         const cumulativeTotalSavings = [];
         for (let i = 1; i <= 12; i++) {
@@ -479,8 +477,11 @@ function updateSavingsChart(monthlyCashFlow) {
         });
     }
     
+    // Generate colors for individual savings categories
+    const colors = generateColors(activeSavingsCategories.length);
+    
     // Add each individual savings category
-    activeSavingsCategories.forEach(category => {
+    activeSavingsCategories.forEach((category, index) => {
         const monthlyAmount = monthlyAllocations[category] || 0;
         const cumulativeSavings = [];
         for (let i = 1; i <= 12; i++) {
@@ -490,11 +491,10 @@ function updateSavingsChart(monthlyCashFlow) {
         datasets.push({
             label: category,
             data: cumulativeSavings,
-            borderColor: colors[colorIndex % colors.length],
-            backgroundColor: colors[colorIndex % colors.length] + '20',
+            borderColor: colors[index],
+            backgroundColor: colors[index] + '20',
             tension: 0.4
         });
-        colorIndex++;
     });
     
     savingsChart = new Chart(ctx, {
@@ -545,7 +545,11 @@ function generateColors(count) {
     const colors = [
         '#667eea', '#764ba2', '#f093fb', '#f5576c',
         '#4facfe', '#00f2fe', '#43e97b', '#38f9d7',
-        '#ffecd2', '#fcb69f', '#a8edea', '#fed6e3'
+        '#ffecd2', '#fcb69f', '#a8edea', '#fed6e3',
+        '#ff9a9e', '#fecfef', '#ffeaa7', '#fab1a0',
+        '#fd79a8', '#fdcb6e', '#6c5ce7', '#a29bfe',
+        '#74b9ff', '#0984e3', '#00b894', '#00cec9',
+        '#e84393', '#e17055', '#2d3436', '#636e72'
     ];
     
     const result = [];
