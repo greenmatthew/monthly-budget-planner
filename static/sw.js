@@ -1,4 +1,4 @@
-const CACHE_NAME = 'budget-planner-v1.2.8';
+const CACHE_NAME = 'monthly-budget-planner';
 const urlsToCache = [
   '/monthly-budget-planner/',
   '/monthly-budget-planner/manifest.json'

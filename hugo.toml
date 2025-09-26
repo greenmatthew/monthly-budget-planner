@@ -1,9 +1,9 @@
 baseURL = "/monthly-budget-planner/"
 title = "Monthly Budget Planner"
-disableKinds = ["taxonomy", "term", "RSS", "sitemap"]
+disableKinds = ["taxonomy", "term", "rss", "sitemap"]
 
 [params]
-  version = "1.2.8"
+  version = "1.3.0"
 
 [build]
   writeStats = false
