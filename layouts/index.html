@@ -6,10 +6,10 @@
     <title>Monthly Budget Planner</title>
 
     <!-- Favicon from favicon.io -->
-    <link rel="apple-touch-icon" sizes="180x180" href="/monthly-budget-planner/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/monthly-budget-planner/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/monthly-budget-planner/favicon-16x16.png">
-    <link rel="shortcut icon" href="/monthly-budget-planner/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="./favicon-16x16.png">
+    <link rel="shortcut icon" href="./favicon.ico">
 
     <!-- PWA Meta Tags -->
     <meta name="theme-color" content="#667eea">
@@ -18,12 +18,12 @@
     <meta name="apple-mobile-web-app-title" content="Budget Planner">
 
     <!-- PWA Manifest -->
-    <link rel="manifest" href="/monthly-budget-planner/manifest.json">
+    <link rel="manifest" href="./manifest.json">
 
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/monthly-budget-planner/sw.js')
+                navigator.serviceWorker.register('./sw.js')
                 .then(registration => console.log('SW registered'))
                 .catch(error => console.log('SW registration failed'));
             });
@@ -177,7 +177,7 @@
     <footer class="footer">
         <div class="footer-content">
             <p>© 2025 Matthew Alan Green</p>
-            <p><a href="https://github.com/greenmatthew/monthly-budget-planner/blob/master/LICENSE">MIT License</a></p>
+            <p><a href="https://github.com/greenmatthew./blob/master/LICENSE">MIT License</a></p>
         </div>
     </footer>
 </body>

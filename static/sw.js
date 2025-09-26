@@ -1,7 +1,7 @@
 const CACHE_NAME = 'monthly-budget-planner';
 const urlsToCache = [
-  '/monthly-budget-planner/',
-  '/monthly-budget-planner/manifest.json'
+  './',
+  './manifest.json'
 ];
 
 self.addEventListener('install', event => {
